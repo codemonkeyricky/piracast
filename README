@@ -1,0 +1,1 @@
+sudo sysctl -w net.core.rmem_default=2097152

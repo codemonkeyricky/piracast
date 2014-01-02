@@ -1,0 +1,14 @@
+Thank you for using Piracast. Note that this is EXTREMELY early beta and the 
+environment has not been finalized. 
+
+To get started: 
+
+1. cd into install directory and execute the setup script. 
+    cd install
+    sudo python setup.py
+2. Set static IP address on wlan0 interface as per setup script instruction. 
+3. Reboot. 
+4. To execute the application: 
+    cd application
+    sudo ./main
+5. You should now see Piracast as an available Wireless Display on your Android phone/tablet.

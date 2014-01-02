@@ -71,7 +71,7 @@ all : $(module_mkdirs) \
       $(module_object)
 
 app : $(depend_objects)
-	gcc $^  $(LIBDIR) $(LDFLAGS) -o $@
+	$(CC) $^  $(LIBDIR) $(LDFLAGS) -o $@
 	cp $@ ../application
 
 # Create output directory.
@@ -80,11 +80,11 @@ mkdir_obj :
 
 # Link all compiled .o files into a single module .o file.
 $(module_object) : $(module_objects) 
-	ld -r $^ -o $@
+	$(LD) -r $^ -o $@
 
 # Compile all source .c files to .o files. 
 $(MODULE_OBJ)/%.o : %.c $(module_dep_includes)
-	gcc -c $(CFLAGS) $(INCLUDES) $< -o $@
+	$(CC) -c $(CFLAGS) $(INCLUDES) $< -o $@
 
 # Remove all object files.
 clobber_mod_files := $(module_object) \

@@ -109,7 +109,7 @@ void mgmt_sys_open(
 
     printf("(mgmt_sys): (mgmt_sys_open): Done.\n");
 
-    sx_thread_create(&f_mgmt_sys_thread, &mgmt_sys_thread, NULL, RT_THREAD_PRIORITY_DEFAULT_PRIORITY);
+    sx_thread_create(&f_mgmt_sys_thread, &mgmt_sys_thread, NULL, MGMT_SYS_THREAD_PRIORITY);
 
     // Wait forever.
     wait_forever();

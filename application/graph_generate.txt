@@ -1,1 +1,0 @@
-gprof app gmon.out | python gprof2dot.py | dot -Tjpg -Gdpi=300 -o output.jpg

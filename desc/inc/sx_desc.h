@@ -11,7 +11,6 @@ typedef struct sSX_DESC
 
 } sSX_DESC;
 
-
 extern sSX_DESC * sx_desc_get(
     void
     );

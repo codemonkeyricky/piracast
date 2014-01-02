@@ -1,6 +1,8 @@
+
 // ========================================================
 // Includes
 // ========================================================
+
 #include <stdio.h>
 #include <assert.h>
 
@@ -9,12 +11,6 @@
 
 #include "sx_types.h"
 #include "sx_audio_sink.h"
-
-//#define WRITE_TO_FILE 1
-
-#if WRITE_TO_FILE
-static FILE * write_ptr;
-#endif
 
 // ========================================================
 // Constants
@@ -327,7 +323,7 @@ INT32 audioplay_set_dest(
 }
 
 
-UINT8   *audioplay_get_buffer(
+UINT8 * audioplay_get_buffer(
     AUDIOPLAY_STATE_T *st
     )
 {
@@ -447,10 +443,6 @@ void sx_audio_sink_init(
     rv = audioplay_set_dest(st, AUDIO_RENDERER); 
     assert(rv == 0); 
 
-#if WRITE_TO_FILE
-    write_ptr = fopen("audio_sink.raw", "wb");
-#endif
-
     printf("(sx_audio_sink_init): Initialization completed...\n");
 }
 
@@ -553,11 +545,6 @@ void sx_audio_sink_buffer_set(
 {
     int             rv;
     OMX_ERRORTYPE   error;
-
-
-#if WRITE_TO_FILE
-    fwrite(buf, buf_len, 1, write_ptr);
-#endif
 
     rv = audioplay_play_buffer(st, buf, buf_len);
     assert(rv == 0);

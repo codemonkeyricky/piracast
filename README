@@ -1,1 +1,20 @@
-sudo sysctl -w net.core.rmem_default=2097152
+Copyright 2013
+
+Welcome to the Piracast project. 
+
+Limitation: 
+    1. Only works with TP-Link dongle.
+    2. No HDCP support (cannot remote Netflix or Google Music). 
+
+To install: 
+    1. Install the dongle driver in env/
+    2. Install DHCP server
+
+To compile the project: 
+    1. cd target
+    2. make app 
+
+To run Piracast:
+    1. cd scripts
+    2. sudo python main.py
+

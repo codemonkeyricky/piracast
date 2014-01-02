@@ -1,19 +1,3 @@
-# This file is part of Piracast.
-# 
-#     Piracast is free software: you can redistribute it and/or modify
-#     it under the terms of the GNU General Public License as published by
-#     the Free Software Foundation, either version 3 of the License, or
-#     (at your option) any later version.
-# 
-#     Piracast is distributed in the hope that it will be useful,
-#     but WITHOUT ANY WARRANTY; without even the implied warranty of
-#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#     GNU General Public License for more details.
-# 
-#     You should have received a copy of the GNU General Public License
-#     along with Piracast.  If not, see <http://www.gnu.org/licenses/>.
-#
-
 import os
 import re
 import subprocess
@@ -44,8 +28,8 @@ def lease_file_timestamp_get() :
 
 cmd_dhcp_start = 'service isc-dhcp-server start'
 cmd_dhcp_stop = 'service isc-dhcp-server stop'
-# cmd_kill_app = 'python core_terminate.py'
-cmd_kill_app = 'killall app'
+# cmd_kill_core_app = 'python core_terminate.py'
+cmd_kill_core_app = 'killall core'
 cmd_wlan0_up = 'ifup wlan0'
 
 print 'Bring up wlan0 just in case...' 
@@ -57,14 +41,14 @@ subprocess.Popen(cmd.split(), shell=False, stdout=subprocess.PIPE)
 
 print 'Kill running application...'
 # core_channel.end(); 
-console_output = subprocess.Popen(cmd_kill_app.split(), shell=False, stdout=subprocess.PIPE)
+console_output = subprocess.Popen(cmd_kill_core_app.split(), shell=False, stdout=subprocess.PIPE)
 output = console_output.stdout.read(); 
 print output
 
 while True : 
     
     # Launch application.
-    cmd = 'sudo nice -n -20 ./app'
+    cmd = 'sudo nice -n -20 ./core'
     subprocess.Popen(cmd.split(), shell=False, stdout=open(os.devnull, 'w'))
 
     # Start DHCP. 
@@ -111,6 +95,6 @@ while True :
 
     # Kill app.
     # core_channel.end(); 
-    console_output = subprocess.Popen(cmd_kill_app.split(), shell=False, stdout=subprocess.PIPE);
+    console_output = subprocess.Popen(cmd_kill_core_app.split(), shell=False, stdout=subprocess.PIPE);
     output = console_output.stdout.read(); 
     print output

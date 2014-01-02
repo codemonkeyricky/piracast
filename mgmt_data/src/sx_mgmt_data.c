@@ -1,26 +1,14 @@
 // ========================================================
 // Includes
 // ========================================================
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <pthread.h>
-#include <mqueue.h>
-#include <assert.h>
-#include <errno.h>
-#include <sys/types.h>
-#include <ifaddrs.h>
-#include <unistd.h> 
 
-#include <netinet/in.h>
-#include <sys/socket.h>
-#include <netdb.h>
+#include <stdio.h>
+#include <pthread.h>
 
 #include "sx_desc.h"
 #include "sx_udp.h"
 #include "sx_pkt.h"
 #include "sx_thread.h"
-#include "sx_queue.h"
 #include "sx_pipe.h"
 
 #include "sx_mgmt_data.h"
@@ -33,49 +21,34 @@
 // Private Types
 // ========================================================
 
+// --------------------------------------------------------
+// sMGMT_DATA_CBLK
+//      Control block structure.
+//
 typedef struct
 {
-    pthread_t       pkt_rx_thread;
-
-    SX_QUEUE        rx_queue;
-
-    SBOX_UDP_ID     udp_sock;
-
-    unsigned int    tx_pkt;
-    unsigned int    rx_pkt;
+    pthread_t       pkt_rx_thread;  ///< Packet receive thread
+    SBOX_UDP_ID     udp_sock;       ///< UDP socket
+    unsigned int    rx_pkt;         ///< Number of received packet
 
 } sMGMT_DATA_CBLK;
-
 
 // ========================================================
 // Private Variables & Functions
 // ========================================================
 
+// Define local control block.
 static sMGMT_DATA_CBLK  f_cblk;
 
-
-static UINT64 sink_time_get_us(
-    void
-    )
-{
-    struct timeval  curr_time;
-
-
-    // Get current time.
-    gettimeofday(&curr_time, NULL);
-
-    UINT64 temp = curr_time.tv_sec * 1*1000*1000 + curr_time.tv_usec;
-
-    return temp;
-}
-
-
+// --------------------------------------------------------
+// pkt_rx_thread
+//      Create packet receive thread.
+//
 static void pkt_rx_thread(
     void * arg
     )
 {
     sPI_PORTAL_PKT *pkt;
-    SX_QUEUE       *queue;
     UINT16          last_seq_num;
     UINT16          curr_seq_num;
 
@@ -145,16 +118,13 @@ static void pkt_rx_thread_create(
 // ========================================================
 
 // --------------------------------------------------------
-// hole_punching_client_init
-//      Opens decoder
+// sx_mgmt_data_init
+//      Initialize data manager.
 //
 void sx_mgmt_data_init( 
     void
     )
 {
-    // Initialize TX pkt queue lock.
-    f_cblk.rx_queue = sx_queue_create();
-
     f_cblk.udp_sock = sx_udp_create(50000);
 
     printf("(mgmt_data): mgmt_data_init(): Initialized.\n");
@@ -162,7 +132,7 @@ void sx_mgmt_data_init(
 
 
 // --------------------------------------------------------
-// mgmt_data_open
+// sx_mgmt_data_open
 //      Open data manager on session boundary.
 //
 void sx_mgmt_data_open( 
@@ -173,3 +143,4 @@ void sx_mgmt_data_open(
 
     printf("(mgmt_data_open): Opened.\n");
 }
+

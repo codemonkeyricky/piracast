@@ -1,7 +1,6 @@
 #if !defined(AUDIO_SINK_H)
 #define AUDIO_SINK_H
 
-
 extern void sx_audio_sink_init(
     void 
 );

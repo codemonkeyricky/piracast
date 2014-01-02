@@ -16,7 +16,7 @@ SYS_INCLUDES := -I $(SDKSTAGE)/opt/vc/include \
                 -I $(PLATFORM_ROOT)/libs/ilclient \
                 -I $(PLATFORM_ROOT)/libs/vgfont
 
-MODULE_INCLUDES := -I$(MODULE_INC)
+MODULE_INCLUDES := -I $(MODULE_INC)
 
 INCLUDES := $(MODULE_INCLUDES) \
             $(DEP_INCLUDES) \
@@ -70,9 +70,9 @@ CFLAGS := -pg -g
 all : $(module_mkdirs) \
       $(module_object)
 
-app : $(depend_objects)
+core : $(depend_objects)
 	$(CC) $^  $(LIBDIR) $(LDFLAGS) -o $@
-	cp $@ ../application
+	cp $@ ../scripts
 
 # Create output directory.
 mkdir_obj : 

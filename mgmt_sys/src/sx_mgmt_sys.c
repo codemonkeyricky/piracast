@@ -100,11 +100,13 @@ void mgmt_sys_open(
     // Initialize video decoder module.
     sx_mgmt_video_decoder_open();
 
+    // Initialize video scheduler. 
     sx_mgmt_video_scheduler_open();
 
     // Initialize video decoder module.
     sx_mgmt_audio_decoder_open();
 
+    // Initialize audio scheduler. 
     sx_mgmt_audio_scheduler_open();
 
     printf("(mgmt_sys): (mgmt_sys_open): Done.\n");

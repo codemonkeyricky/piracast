@@ -164,9 +164,9 @@ def source_connect (ip) :
             print 'Tear down received!'
             break; 
 
-        if keep_alive_sent == 120 : 
-            print 'demo times up!'
-            break; 
+        # if keep_alive_sent == 120 : 
+        #   print 'demo times up!'
+        #   break; 
 
         s.send(m16_rsp.format(cseq)); 
 

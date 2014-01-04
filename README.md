@@ -1,12 +1,13 @@
 Copyright 2013
 
-## Welcome to the Piracast project. 
+Welcome to the Piracast project. 
+=========
 
-# Limitation: 
+### Limitation: 
     1. Only works with TP-Link dongle.
     2. No HDCP support (cannot remote Netflix or Google Music). 
 
-# Environment Setup: 
+### Environment Setup: 
 1. Install driver: 
 	sudo cp env/8188eu.ko /lib/modules/`uname -r`/kernel/drivers/net/wireless
    	sudo depmod -a
@@ -17,10 +18,10 @@ Copyright 2013
 	cp env/isc-dhcp-server /etc/default
 	cp dhcpd.conf /etc/dhcp/
 
-# Compile the project: 
+### Compile the project: 
     1. cd target
     2. make core
 
-# To run Piracast:
+### To run Piracast:
     1. cd scripts
     2. sudo python piracast.py

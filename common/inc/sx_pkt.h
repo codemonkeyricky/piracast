@@ -3,20 +3,18 @@
 
 #include "sx_types.h"
 
-#define TRANSPORT_ERROR_INDICATOR       0x80
-#define PAYLOAD_UNIT_START_INDICATOR    0x40
-#define TRANSPORT_PRIORITY              0x20
-#define PID_1                           0x1F
-#define PID_2                           0xFF
-
 #define PID_GET(hdr)                    ((((hdr).tei_pusi_tp_pid1 & 0x1F) << 8) | (hdr).pid2)
 #define CC_GET(hdr)                     ((hdr).tsc_afc_cc & 0x0F)
 #define PUSI_GET(hdr)                   (((hdr).tei_pusi_tp_pid1 & 0x40) >> 6)
 #define AFC_GET(hdr)                    (((hdr).tsc_afc_cc & 0x30) >> 4)
 
-#define PI_PORTAL_PKT_HDR_SIZE          sizeof(unsigned int)
-#define PI_PORTAL_PKT_PAYLOAD_SIZE_MAX  (1472-PI_PORTAL_PKT_HDR_SIZE)
+#define PIRACAST_PKT_HDR_SIZE          	(sizeof(unsigned int))
+#define PIRACAST_PKT_PAYLOAD_SIZE_MAX	(1472-PIRACAST_PKT_HDR_SIZE)
 
+// --------------------------------------------------------
+// sRTP_HDR
+//      RTP header
+//
 typedef struct
 {
     UINT8   version_p_x_cc;
@@ -28,6 +26,10 @@ typedef struct
 } sRTP_HDR;
 
 
+// --------------------------------------------------------
+// sMPEG2_TS_HDR
+//      MPEG2 Transport Stream header
+//
 typedef struct
 {
     UINT8   sync_byte;          ///< Sync byte
@@ -43,6 +45,10 @@ typedef struct
 } sMPEG2_TS_HDR;
 
 
+// --------------------------------------------------------
+// sMPEG2_TS_PAYLOAD
+//      MPEG2 Transport Stream Payload
+//
 typedef struct
 {
     UINT8   payload[184];
@@ -50,6 +56,10 @@ typedef struct
 } sMPEG2_TS_PAYLOAD;
 
 
+// --------------------------------------------------------
+// sMPEG2_TS
+//      MPEG2 Transport Stream
+//
 typedef struct
 {
     sMPEG2_TS_HDR       hdr;
@@ -87,7 +97,7 @@ typedef struct
 typedef struct
 {
     unsigned int    hdr;
-    unsigned char   payload[PI_PORTAL_PKT_PAYLOAD_SIZE_MAX];
+    unsigned char   payload[PIRACAST_PKT_PAYLOAD_SIZE_MAX];
 
 } sPI_PORTAL_PKT;
 

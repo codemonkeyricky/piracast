@@ -35,13 +35,12 @@ typedef struct
 // Decoder control block
 typedef struct
 {
-    pthread_t           decoder_thread; 
-
-    UINT32      look_for_new_slice;
-    UINT32      continue_current_slice;
-    UINT32      pes_len;
-    UINT32      pes_curr_byte_count;
-    UINT32      last_seq_num;
+    pthread_t       decoder_thread;
+    UINT32          look_for_new_slice;
+    UINT32          continue_current_slice;
+    UINT32          pes_len;
+    UINT32          pes_curr_byte_count;
+    UINT32          last_seq_num;
     sSLICE_CHAIN    slice_chain;
 
 } sDECODER_CBLK;
@@ -106,7 +105,7 @@ static UINT32 pes_payload_size(
     UINT8  *curr_ptr;
     UINT32  bytes_left;
     UINT32  afc;
-    UINT32      pid;
+    UINT32  pid;
     UINT32  pes_byte_count;
     UINT32  payload_size;
 
@@ -410,6 +409,10 @@ static void decoder_thread_create(
 // Public Functions
 // ========================================================
 
+// --------------------------------------------------------
+// sx_mgmt_audio_decoder_init
+//      Initializes decoder
+//
 void sx_mgmt_audio_decoder_init(
     void
     )
@@ -420,7 +423,7 @@ void sx_mgmt_audio_decoder_init(
 
 
 // --------------------------------------------------------
-// decoder_open
+// sx_mgmt_audio_decoder_open
 //      Opens decoder
 //
 void sx_mgmt_audio_decoder_open(
@@ -432,6 +435,10 @@ void sx_mgmt_audio_decoder_open(
 }
 
 
+// --------------------------------------------------------
+// sx_mgmt_audio_decoder_close
+//      Closes decoder
+//
 void sx_mgmt_audio_decoder_close(
     void
     )

@@ -448,8 +448,8 @@ void sx_audio_sink_init(
 
 
 // --------------------------------------------------------
-// decoder_hw_get_buf
-//      Get decoder hardware buffer. 
+// sx_audio_sink_buffer_get
+//      Get audio buffer.
 //
 UINT8 * sx_audio_sink_buffer_get(
     void
@@ -463,6 +463,10 @@ UINT8 * sx_audio_sink_buffer_get(
 }
 
 
+// --------------------------------------------------------
+// sx_audio_sink_playback_speed_inc
+//      Speed up playback.
+//
 void sx_audio_sink_playback_speed_inc(
     )
 {
@@ -481,6 +485,10 @@ void sx_audio_sink_playback_speed_inc(
 }
 
 
+// --------------------------------------------------------
+// sx_audio_sink_playback_speed_reset
+//      Normal playback speed.
+//
 void sx_audio_sink_playback_speed_reset(
     )
 {
@@ -499,6 +507,10 @@ void sx_audio_sink_playback_speed_reset(
 }
 
 
+// --------------------------------------------------------
+// sx_audio_sink_playback_speed_dec
+//      Slowdown playback.
+//
 void sx_audio_sink_playback_speed_dec(
     )
 {
@@ -520,7 +532,7 @@ void sx_audio_sink_playback_speed_dec(
 
 // --------------------------------------------------------
 // sx_audio_sink_ms_left_get
-//      Get milliseconds left
+//      Get milliseconds left in the hardware queue.
 //
 unsigned int sx_audio_sink_ms_left_get(
     void

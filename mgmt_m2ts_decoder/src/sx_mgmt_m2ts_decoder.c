@@ -162,18 +162,22 @@ static ePKT_TYPE pkt_type_get(
     bytes_left -= sizeof(sRTP_HDR);
     assert((bytes_left % sizeof(sMPEG2_TS)) == 0);
 
+    // printf("(mgmt_m2ts): pkt_type_get() invoked!\n");
+
     do
     {
         sMPEG2_TS *ts = (sMPEG2_TS *) curr_ptr;
         UINT16 pid = PID_GET(ts->hdr);
 
-//        printf("(mgmt_m2ts): 0x%x 0x%x 0x%x 0x%x\n",
-//                ts->hdr.sync_byte,
-//                ts->hdr.tei_pusi_tp_pid1,
-//                ts->hdr.pid2,
-//                ts->hdr.tsc_afc_cc);
-//
-//        printf("(mgmt_m2ts): pid = 0x%.4x\n", pid);
+#if 0
+        printf("(mgmt_m2ts): 0x%x 0x%x 0x%x 0x%x\n",
+                ts->hdr.sync_byte,
+                ts->hdr.tei_pusi_tp_pid1,
+                ts->hdr.pid2,
+                ts->hdr.tsc_afc_cc);
+
+        printf("(mgmt_m2ts): pid = 0x%.4x\n", pid);
+#endif
 
         if(pid == 0x1011)
         {
@@ -188,8 +192,6 @@ static ePKT_TYPE pkt_type_get(
         curr_ptr += sizeof(sMPEG2_TS);
 
     } while (bytes_left > 0);
-
-    assert(0);
 
     return PKT_TYPE_NULL;
 }
@@ -256,6 +258,11 @@ static void pkt_process_thread(
                 case PKT_TYPE_AUDIO:
                 {
                     sx_pipe_put(SX_VRDMA_LPCM, desc);
+                    break;
+                }
+                case PKT_TYPE_NULL: 
+                {
+                    sx_desc_put(desc); 
                     break;
                 }
                 default:

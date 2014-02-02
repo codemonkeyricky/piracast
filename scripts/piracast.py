@@ -49,7 +49,7 @@ while True :
     
     # Launch application.
     cmd = 'sudo nice -n -20 ./core'
-    subprocess.Popen(cmd.split(), shell=False, stdout=open(os.devnull, 'w'))
+    subprocess.Popen(cmd.split(), shell=False) # , stdout=open(os.devnull, 'w'))
 
     # Start DHCP. 
     console_output = subprocess.Popen(cmd_dhcp_start.split(), shell=False, stdout=subprocess.PIPE)

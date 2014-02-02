@@ -115,33 +115,20 @@ static void video_scheduler_slice_dump(
 
             if(pid == 0x1011)
             {
+                UINT8 stuffing = 0; 
+                if(afc & 0x02)
+                {
+                    stuffing = 1 + ts->payload.payload[0]; 
+                }
+
+                start_offset = stuffing; 
+
                 if(PUSI_GET(ts->hdr))
                 {
-                    assert(afc == 0x01);
-
-                    start_offset = 14;
-
-                    payload_size = (sizeof(sMPEG2_TS_PAYLOAD) - 14);
+                     start_offset += 14;
                 }
-                else
-                {
-                    if(afc == 0x01)
-                    {
-                        start_offset = 0;
 
-                        payload_size = sizeof(sMPEG2_TS_PAYLOAD);
-                    }
-                    else if(afc == 0x03)
-                    {
-                        start_offset = 1 + ts->payload.payload[0];
-
-                        payload_size = sizeof(sMPEG2_TS_PAYLOAD) - 1 - ts->payload.payload[0];
-                    }
-                    else
-                    {
-                        assert(0);
-                    }
-                }
+                payload_size = sizeof(sMPEG2_TS_PAYLOAD) - start_offset;
 
                 if((copy_index + payload_size) > 81920)
                 {

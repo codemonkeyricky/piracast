@@ -216,7 +216,7 @@ static void m2ts_data_interpret(
 
             if(PUSI_GET(ts->hdr))
             {
-                assert(afc == 0x01);
+                // assert(afc == 0x03);
 
                 //            printf("### 0x%x 0x%x 0x%x 0x%x\n",
                 //                   ts->payload.payload[14],
@@ -304,6 +304,20 @@ static UINT8 slice_start_find(
         {
             curr_ptr = &ts->payload.payload[0];
 
+            UINT8 adaptation_field_len = 0; 
+            if(afc & 0x02)
+            {
+                // adaption field is present. 
+                // 
+                // determine how many bytes to skip. 
+
+                adaptation_field_len = 1 + *curr_ptr; 
+            }
+
+            // Skip 'adaptation field length' field.
+            curr_ptr += adaptation_field_len;
+
+            // Skip adaptation field length.
             curr_ptr += sizeof(sPES);
 
             sPES_EXT *pes_ext = (sPES_EXT *) curr_ptr;
@@ -320,8 +334,35 @@ static UINT8 slice_start_find(
 
             curr_ptr += sizeof(sPES_EXT);
 
-            // Consistency check.
-            assert(*curr_ptr == 0x05);
+            if(*curr_ptr != 0x05)
+            {
+                printf("0x%x 0x%x 0x%x 0x%x 0x%x 0x%x 0x%x 0x%x\n", 
+                       ((UINT8 *) ts)[0], 
+                       ((UINT8 *) ts)[1], 
+                       ((UINT8 *) ts)[2], 
+                       ((UINT8 *) ts)[3], 
+                       ((UINT8 *) ts)[4], 
+                       ((UINT8 *) ts)[5], 
+                       ((UINT8 *) ts)[6], 
+                       ((UINT8 *) ts)[7]); 
+
+                printf("0x%x 0x%x 0x%x 0x%x 0x%x 0x%x 0x%x 0x%x\n", 
+                       ((UINT8 *) ts)[8], 
+                       ((UINT8 *) ts)[9], 
+                       ((UINT8 *) ts)[10], 
+                       ((UINT8 *) ts)[11], 
+                       ((UINT8 *) ts)[12], 
+                       ((UINT8 *) ts)[13], 
+                       ((UINT8 *) ts)[14], 
+                       ((UINT8 *) ts)[15]); 
+
+                printf("*curr_ptr = 0x%x, delta = %u\n",
+                       *curr_ptr, 
+                       (UINT8 *)curr_ptr - (UINT8 *) ts);
+
+                // Consistency check.
+                assert(0); 
+            }
 
             curr_ptr++;
 

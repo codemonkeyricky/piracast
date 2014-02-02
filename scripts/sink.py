@@ -33,7 +33,7 @@ m2_req =    'OPTIONS * RTSP/1.0\r\n' \
 
 m3_body =   'wfd_video_formats: 39 00 02 02 0001FFFF 3FFFFFFF 00000000 00 0000 0000 00 none none\r\n'   \
             'wfd_audio_codecs: LPCM 00000002 00\r\n'         \
-            'wfd_client_rtp_ports: RTP/AVP/UDP;unicast 19000 0 mode=play\r\n'
+            'wfd_client_rtp_ports: RTP/AVP/UDP;unicast 50000 0 mode=play\r\n'
 
 m3_rsp =    'RTSP/1.0 200 OK\r\n'                               \
             'Date: Sun, 11 Aug 2013 04:41:40 +000\r\n'          \

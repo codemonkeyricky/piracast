@@ -95,7 +95,7 @@ def p2p_enable() :
     call(["iwpriv", "wlan0", "p2p_set", "enable=1"])
 
     # Set intent
-    call(["iwpriv", "wlan0", "p2p_set", "intent=1"])
+    call(["iwpriv", "wlan0", "p2p_set", "intent=15"])
 
     # Set operation channel
     call(["iwpriv", "wlan0", "p2p_set", "op_ch=9"])

@@ -165,6 +165,23 @@ static void audio_scheduler_slice_dump(
 
             if(pid == 0x1100)
             {
+                UINT8 stuffing = 0; 
+                if(afc & 0x02)
+                {
+                    stuffing = 1 + ts->payload.payload[0]; 
+                }
+
+                start_offset = stuffing; 
+
+                if(PUSI_GET(ts->hdr))
+                {
+                     start_offset += 20;
+                }
+
+                payload_size = sizeof(sMPEG2_TS_PAYLOAD) - start_offset;
+
+
+#if 0
                 if(PUSI_GET(ts->hdr))
                 {
                     assert(afc == 0x01);
@@ -192,6 +209,7 @@ static void audio_scheduler_slice_dump(
                         assert(0);
                     }
                 }
+#endif 
 
 //                printf("copy 0x%.2x 0x%.2x 0x%.2x 0x%.2x 0x%.2x 0x%.2x 0x%.2x 0x%.2x\n",
 //                        ts->payload.payload[start_offset],

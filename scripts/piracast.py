@@ -2,6 +2,7 @@ import os
 import re
 import subprocess
 from subprocess import call
+import time
 
 import wfd
 import core_channel
@@ -72,13 +73,13 @@ while True :
             print 'Source has requested IP!'
 
             # wait for network to be properly configured. 
-            call(["sleep", "2"])
+            time.sleep(2)
 
             break; 
 
         print 'lease table has not been updated, wait for a second...' 
 
-        call(["sleep", "1"])
+        time.sleep(1)
     
     # Get source IP. 
     ip = leased_ip_get(); 

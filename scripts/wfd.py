@@ -17,6 +17,7 @@
 import re
 import subprocess
 from subprocess import call
+import time
 
 def peer_mac_get() :
     rsp = subprocess.Popen(["iwpriv", "wlan0", "p2p_get", "peer_ifa"], shell=False, stdout=subprocess.PIPE)
@@ -27,14 +28,14 @@ def peer_mac_get() :
 def wpa_supplicant_start() : 
     print 'wpa_supplicant_start:'
     call(["./wpa_supplicant", "-i", "wlan0", "-c", "./wpa_0_8.conf", "-B"])
-    call(["sleep", "1"])
+    time.sleep(1)
 
 def wps_auth() : 
     print 'wps_auth:'
     rsp = subprocess.Popen(["./hostapd_cli", "wps_pbc", "any"], shell=False, stdout=subprocess.PIPE)
     output = rsp.stdout.read(); 
     print output
-    call(["sleep", "1"])
+    time.sleep(1)
 
 def wps_status_get() : 
     print 'wps_satus_get:'
@@ -63,7 +64,7 @@ def p2p_set_nego(mac) :
     while True : 
 
         # Wait for result. 
-        call(["sleep", ".5"])
+        time.sleep(0.5)
 
         # Poll status.
         peer_status = p2p_status_get()
@@ -101,7 +102,7 @@ def p2p_enable() :
     call(["iwpriv", "wlan0", "p2p_set", "op_ch=9"])
 
     # Sleep for 50ms
-    call(["sleep", "0.05"])
+    time.sleep(0.05)
 
     # Set ssid
     call(["iwpriv", "wlan0", "p2p_set", "ssid=DIRECT-RT"])
@@ -175,7 +176,7 @@ def wait_forever() :
 
     while True : 
 
-        call(["sleep", "1"])
+        time.sleep(1)
 
 def p2p_go_mode_set() : 
 
@@ -183,12 +184,12 @@ def p2p_go_mode_set() :
     call(["./hostapd", "-B", "p2p_hostapd.conf"])
 
     # Wait for initialization.
-    call(["sleep", "1"])
+    time.sleep(1)
 
     do_wps(); 
 
     # Wait for host apd interval
-    call(["sleep", "1"])
+    time.sleep(1)
 
     while True : 
 
@@ -198,7 +199,7 @@ def p2p_go_mode_set() :
             print 'Wireless display negotiation completed!'
             break; 
 
-        call(["sleep", "1"])
+        time.sleep(1)
 
 def do_wps() : 
 
@@ -216,7 +217,7 @@ def do_wps() :
             print 'wps passed!' 
             break; 
 
-        call(["sleep", "1"])
+        time.sleep(1)
 
 def read_all_sta() : 
 
@@ -275,7 +276,7 @@ def wfd_connection_wait() :
     # Disable p2p
     p2p_disable(); 
     
-    call(["sleep", "0.5"])
+    time.sleep(0.5)
     
     # Enable p2p
     p2p_enable() ; 
@@ -317,7 +318,7 @@ def wfd_connection_wait() :
                 
                 break
     
-        call(["sleep", "1"])
+        time.sleep(1)
         
     print 'Getting peer device address...'
     

@@ -16,7 +16,6 @@
 
 import re
 import subprocess
-from subprocess import call
 import time
 
 def peer_mac_get() :
@@ -27,7 +26,7 @@ def peer_mac_get() :
 
 def wpa_supplicant_start() : 
     print 'wpa_supplicant_start:'
-    call(["./wpa_supplicant", "-i", "wlan0", "-c", "./wpa_0_8.conf", "-B"])
+    subprocess.call(["./wpa_supplicant", "-i", "wlan0", "-c", "./wpa_0_8.conf", "-B"])
     time.sleep(1)
 
 def wps_auth() : 
@@ -45,7 +44,7 @@ def wps_status_get() :
 
 def p2p_wpsinfo() : 
     print 'p2p_wpsinfo:'
-    call(["iwpriv", "wlan0", "p2p_set", "got_wpsinfo=3"])
+    subprocess.call(["iwpriv", "wlan0", "p2p_set", "got_wpsinfo=3"])
 
 def p2p_status_get() : 
 #     print 'p2p_status_get:'
@@ -58,7 +57,7 @@ def p2p_status_get() :
 def p2p_set_nego(mac) : 
     print 'p2p_set_nego:'
     print 'mac: ', mac
-    call(["iwpriv", "wlan0", "p2p_set", "nego=" + mac])
+    subprocess.call(["iwpriv", "wlan0", "p2p_set", "nego=" + mac])
 
     # Enter negotiation loop.
     while True : 
@@ -93,28 +92,28 @@ def p2p_set_nego(mac) :
 def p2p_enable() : 
 
     # Enable p2p
-    call(["iwpriv", "wlan0", "p2p_set", "enable=1"])
+    subprocess.call(["iwpriv", "wlan0", "p2p_set", "enable=1"])
 
     # Set intent
-    call(["iwpriv", "wlan0", "p2p_set", "intent=15"])
+    subprocess.call(["iwpriv", "wlan0", "p2p_set", "intent=15"])
 
     # Set operation channel
-    call(["iwpriv", "wlan0", "p2p_set", "op_ch=9"])
+    subprocess.call(["iwpriv", "wlan0", "p2p_set", "op_ch=9"])
 
     # Sleep for 50ms
     time.sleep(0.05)
 
     # Set ssid
-    call(["iwpriv", "wlan0", "p2p_set", "ssid=DIRECT-RT"])
+    subprocess.call(["iwpriv", "wlan0", "p2p_set", "ssid=DIRECT-RT"])
 
     # Set DN
-    call(["iwpriv", "wlan0", "p2p_set", "setDN=Piracast"])
+    subprocess.call(["iwpriv", "wlan0", "p2p_set", "setDN=Piracast"])
 
     # print 'p2p_get role...'
-    # call(["iwpriv", "wlan0", "p2p_get", "role"])
+    # subprocess.call(["iwpriv", "wlan0", "p2p_get", "role"])
 
 #     print 'scan...'
-#     call(["iwlist", "wlan0", "scan"])
+#     subprocess.call(["iwlist", "wlan0", "scan"])
 
 # ----------------------- 
 # p2p_peer_devaddr_get
@@ -181,7 +180,7 @@ def wait_forever() :
 def p2p_go_mode_set() : 
 
     # Start host APD
-    call(["./hostapd", "-B", "p2p_hostapd.conf"])
+    subprocess.call(["./hostapd", "-B", "p2p_hostapd.conf"])
 
     # Wait for initialization.
     time.sleep(1)
@@ -234,7 +233,7 @@ def read_all_sta() :
 
 def p2p_disable() : 
 
-    call(["iwpriv", "wlan0", "p2p_set", "enable=0"])
+    subprocess.call(["iwpriv", "wlan0", "p2p_set", "enable=0"])
     
 def p2p_peer_scan() :
     
@@ -268,10 +267,10 @@ cmd_iwlist_wlan0_scan       = 'iwlist wlan0 scan'
 
 def wfd_connection_wait() : 
     
-    call(cmd_killall_wpa_spplicant.split())
+    subprocess.call(cmd_killall_wpa_spplicant.split())
 
     # Kill app 
-    call(cmd_killall_hostapd.split())
+    subprocess.call(cmd_killall_hostapd.split())
     
     # Disable p2p
     p2p_disable(); 

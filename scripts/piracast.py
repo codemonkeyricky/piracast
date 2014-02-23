@@ -10,6 +10,8 @@ import wfd
 import core_channel
 import sink
 
+from util import get_stdout
+
 # Getting the leased IP address.
 def leased_ip_get() : 
 
@@ -21,13 +23,7 @@ def leased_ip_get() :
     return ip_list[-1]
 
 def lease_file_timestamp_get() : 
-
-    cmd_ls_dhcp_lease = 'ls -l /var/lib/dhcp/dhcpd.leases'
-
-    rsp = subprocess.Popen(cmd_ls_dhcp_lease.split(), shell=False, stdout=subprocess.PIPE)
-    ts = rsp.stdout.read(); 
-
-    return ts; 
+    return get_stdout('ls -l /var/lib/dhcp/dhcpd.leases')
 
 cmd_dhcp_start = 'service isc-dhcp-server start'
 cmd_dhcp_stop = 'service isc-dhcp-server stop'
@@ -36,28 +32,22 @@ cmd_kill_core_app = 'killall core'
 cmd_wlan0_up = 'ifup wlan0'
 
 print 'Bring up wlan0 just in case...' 
-subprocess.Popen(cmd_wlan0_up.split(), shell=False, stdout=subprocess.PIPE)
+get_stdout(cmd_wlan0_up)
 
 print 'Increase rmem_default...'
-cmd = 'sudo sysctl -w net.core.rmem_default=1000000'
-subprocess.Popen(cmd.split(), shell=False, stdout=subprocess.PIPE)
+get_stdout('sudo sysctl -w net.core.rmem_default=1000000'.split())
 
 print 'Kill running application...'
 # core_channel.end(); 
-console_output = subprocess.Popen(cmd_kill_core_app.split(), shell=False, stdout=subprocess.PIPE)
-output = console_output.stdout.read(); 
-print output
+print get_stdout(cmd_kill_core_app)
 
 while True : 
     
     # Launch application.
-    cmd = 'sudo nice -n -20 ./core'
-    subprocess.Popen(cmd.split(), shell=False) # , stdout=open(os.devnull, 'w'))
+    get_stdout('sudo nice -n -20 ./core')
 
     # Start DHCP. 
-    console_output = subprocess.Popen(cmd_dhcp_start.split(), shell=False, stdout=subprocess.PIPE)
-    output = console_output.stdout.read(); 
-    print output
+    print get_stdout(cmd_dhcp_start)
 
     # Get previous timestamp. 
     prev_ts = lease_file_timestamp_get(); 
@@ -92,12 +82,10 @@ while True :
     sink.source_connect(ip); 
     
     # Stop DHCP. 
-    console_output = subprocess.call(cmd_dhcp_stop.split(), shell=False, stdout=subprocess.PIPE)
-    # output = console_output.stdout.read(); 
+    output = get_stdout(cmd_dhcp_stop)
     #print output
 
     # Kill app.
     # core_channel.end(); 
-    console_output = subprocess.Popen(cmd_kill_core_app.split(), shell=False, stdout=subprocess.PIPE);
-    output = console_output.stdout.read(); 
+    output = get_stdout(cmd_kill_core_app)
     print output

@@ -18,10 +18,7 @@ import re
 import subprocess
 import time
 
-def get_stdout(args):
-    cmd = subprocess.Popen(args, shell=False, stdout=subprocess.PIPE)
-    (stdoutdata, stderrdata) = cmd.communicate()
-    return stdoutdata
+from util import get_stdout
 
 def peer_mac_get() :
     output = get_stdout(["iwpriv", "wlan0", "p2p_get", "peer_ifa"])

@@ -168,8 +168,8 @@ def wait_forever() :
 
 def p2p_go_mode_set() : 
 
-    # Start host APD
-    subprocess.call(["./hostapd", "-B", "p2p_hostapd.conf"])
+    # Start hostAPd and wait for it to daemonize; ignore stdout
+    get_stdout(["./hostapd", "-B", "p2p_hostapd.conf"])
 
     # Wait for initialization.
     time.sleep(1)

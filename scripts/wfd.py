@@ -18,9 +18,13 @@ import re
 import subprocess
 import time
 
+def get_stdout(args):
+    cmd = subprocess.Popen(args, shell=False, stdout=subprocess.PIPE)
+    (stdoutdata, stderrdata) = cmd.communicate()
+    return stdoutdata
+
 def peer_mac_get() :
-    rsp = subprocess.Popen(["iwpriv", "wlan0", "p2p_get", "peer_ifa"], shell=False, stdout=subprocess.PIPE)
-    output = rsp.stdout.read(); 
+    output = get_stdout(["iwpriv", "wlan0", "p2p_get", "peer_ifa"])
     match = re.search(r'MAC (.*)$', output)
     return match.group(1)
 
@@ -30,17 +34,11 @@ def wpa_supplicant_start() :
     time.sleep(1)
 
 def wps_auth() : 
-    print 'wps_auth:'
-    rsp = subprocess.Popen(["./hostapd_cli", "wps_pbc", "any"], shell=False, stdout=subprocess.PIPE)
-    output = rsp.stdout.read(); 
-    print output
+    print 'wps_auth:', get_stdout(["./hostapd_cli", "wps_pbc", "any"])
     time.sleep(1)
 
 def wps_status_get() : 
-    print 'wps_satus_get:'
-    rsp = subprocess.Popen(["./wpa_cli", "status"], shell=False, stdout=subprocess.PIPE)
-    output = rsp.stdout.read(); 
-    print output
+    print 'wps_status_get:', get_stdout(["./wpa_cli", "status"])
 
 def p2p_wpsinfo() : 
     print 'p2p_wpsinfo:'
@@ -48,11 +46,9 @@ def p2p_wpsinfo() :
 
 def p2p_status_get() : 
 #     print 'p2p_status_get:'
-    rsp = subprocess.Popen(["iwpriv", "wlan0", "p2p_get", "status"], shell=False, stdout=subprocess.PIPE)
-    output = rsp.stdout.read(); 
+    output = get_stdout(["iwpriv", "wlan0", "p2p_get", "status"])
     match = re.search(r'Status=(\d*)', output)
-    peer_status = int(match.group(1))
-    return peer_status
+    return int(match.group(1))
 
 def p2p_set_nego(mac) : 
     print 'p2p_set_nego:'
@@ -121,8 +117,8 @@ def p2p_enable() :
 # ----------------------- 
 def p2p_peer_devaddr_get() : 
     print 'p2p_peer_devaddr_get:'
-    console_output = subprocess.Popen(["iwpriv", "wlan0", "p2p_get", "peer_deva"], shell=False, stdout=subprocess.PIPE)
-    match = re.search(r'\n(.*)$', console_output.stdout.read())
+    output = get_stdout(["iwpriv", "wlan0", "p2p_get", "peer_deva"])
+    match = re.search(r'\n(.*)$', output)
     mac = match.group(1)[0] + match.group(1)[1] + ':' \
         + match.group(1)[2] + match.group(1)[3] + ':' \
         + match.group(1)[4] + match.group(1)[5] + ':' \
@@ -137,18 +133,14 @@ def p2p_peer_devaddr_get() :
 #   Gets supported authentication type.
 # ----------------------- 
 def p2p_req_cm_get() : 
-    print 'p2p_req_cm_get:'
-    console_output = subprocess.Popen(["iwpriv", "wlan0", "p2p_get", "req_cm"], shell=False, stdout=subprocess.PIPE)
-    print console_output.stdout.read(); 
+    print 'p2p_req_cm_get:', get_stdout(["iwpriv", "wlan0", "p2p_get", "req_cm"])
 
 # ----------------------- 
 # p2p_req_cm_get
 #   Gets supported authentication type.
 # ----------------------- 
 def p2p_req_cm_get() : 
-    print 'p2p_req_cm_get:'
-    console_output = subprocess.Popen(["iwpriv", "wlan0", "p2p_get", "req_cm"], shell=False, stdout=subprocess.PIPE)
-    print console_output.stdout.read(); 
+    print 'p2p_req_cm_get:', get_stdout(["iwpriv", "wlan0", "p2p_get", "req_cm"])
 
 # ----------------------- 
 # p2p_req_cm_get
@@ -156,18 +148,18 @@ def p2p_req_cm_get() :
 # ----------------------- 
 def p2p_role_get() : 
     print 'p2p_role_get:'
-    console_output = subprocess.Popen(["iwpriv", "wlan0", "p2p_get", "role"], shell=False, stdout=subprocess.PIPE)
-    match = re.search(r'Role=(\d*)', console_output.stdout.read())
+    output = get_stdout(["iwpriv", "wlan0", "p2p_get", "role"])
+    match = re.search(r'Role=(\d*)', output)
     role = int(match.group(1))
     return role
 
 def p2p_opch_get() : 
     print 'p2p_opch_get:'
     print '---------------------------'
-    console_output = subprocess.Popen(["iwpriv", "wlan0", "p2p_get", "op_ch"], shell=False, stdout=subprocess.PIPE)
-    print console_output.stdout.read()
+    output = get_stdout(["iwpriv", "wlan0", "p2p_get", "op_ch"])
+    print output
     print '---------------------------'
-    # match = re.search(r'Role=(\d*)', console_output.stdout.read())
+    # match = re.search(r'Role=(\d*)', output)
     # role = int(match.group(1))
     # return role
 
@@ -205,10 +197,7 @@ def do_wps() :
     while (1) : 
 
         print 'do_wps'
-        console_output = subprocess.Popen(["./hostapd_cli", "wps_pbc", "any"], shell=False, stdout=subprocess.PIPE)
-
-        status_ok = "OK"
-        output = console_output.stdout.read()
+        output = get_stdout(["./hostapd_cli", "wps_pbc", "any"])
 
         print output
 
@@ -221,8 +210,7 @@ def do_wps() :
 def read_all_sta() : 
 
     print 'read_all_sta:'
-    console_output = subprocess.Popen(["./hostapd_cli", "all_sta"], shell=False, stdout=subprocess.PIPE)
-    output = console_output.stdout.read()
+    output = get_stdout(["./hostapd_cli", "all_sta"])
 
     print output
 
@@ -240,9 +228,7 @@ def p2p_peer_scan() :
     count = 0; 
     
     while True : 
-        
-        console_output = subprocess.Popen(cmd_iwlist_wlan0_scan.split(), shell=False, stdout=subprocess.PIPE)
-        output = console_output.stdout.read(); 
+        output = get_stdout(cmd_iwlist_wlan0_scan.split())
         
         print output
         

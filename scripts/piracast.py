@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 # This file is part of Piracast.
 #
@@ -25,28 +25,32 @@ import sink
 
 from util import get_stdout
 
-# Getting the leased IP address
-def leased_ip_get():
-    contents = open("/var/lib/dhcp/dhcpd.leases").read()
-    ip_list = re.findall(r'lease (\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})', contents)
-
-    # Return the most recent leased IP
-    return ip_list[-1]
-
-def lease_file_timestamp_get():
-    return get_stdout('ls -l /var/lib/dhcp/dhcpd.leases')
-
-cmd_dhcp_start = 'service isc-dhcp-server start'
-cmd_dhcp_stop = 'service isc-dhcp-server stop'
+cmd_wlan0_up = 'ifup wlan0'
+cmd_inc_rmem_default = 'sysctl -w net.core.rmem_default=1000000'
+cmd_launch_core_app = 'nice -n -20 ./core'
 #cmd_kill_core_app = 'python core_terminate.py'
 cmd_kill_core_app = 'killall core'
-cmd_wlan0_up = 'ifup wlan0'
+cmd_dhcp_start = 'service isc-dhcp-server start'
+cmd_dhcp_stop = 'service isc-dhcp-server stop'
+
+lease_file = '/var/lib/dhcp/dhcpd.leases'
+
+def lease_file_timestamp_get():
+    return get_stdout('ls -l "%s"' % lease_file)
+
+# get the leased IP address
+def leased_ip_get():
+    contents = open(lease_file).read()
+    ip_list = re.findall(r'lease (\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})', contents)
+
+    # return the most recently leased IP address
+    return ip_list[-1]
 
 print 'Bring up wlan0 just in case...'
 get_stdout(cmd_wlan0_up)
 
 print 'Increase rmem_default...'
-get_stdout('sudo sysctl -w net.core.rmem_default=1000000')
+get_stdout(cmd_inc_rmem_default)
 
 print 'Kill running application...'
 #core_channel.end()
@@ -54,10 +58,10 @@ print get_stdout(cmd_kill_core_app)
 
 while 1:
 
-    # Launch application.
-    get_stdout('sudo nice -n -20 ./core')
+    # Launch application
+    get_stdout(cmd_launch_core_app)
 
-    # Start DHCP. 
+    # Start DHCP
     print get_stdout(cmd_dhcp_start)
 
     # Get previous timestamp

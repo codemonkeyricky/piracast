@@ -18,8 +18,12 @@ import time
 
 from util import get_stdout
 
+cmd_killall_wpa_spplicant   = 'killall wpa_supplicant'
+cmd_killall_hostapd         = 'killall hostapd'
+cmd_iwlist_wlan0_scan       = 'iwlist wlan0 scan'
+
 def peer_mac_get():
-    output = get_stdout(["iwpriv", "wlan0", "p2p_get", "peer_ifa"])
+    output = get_stdout('iwpriv wlan0 p2p_get peer_ifa')
     match = re.search(r'MAC (.*)$', output)
     return match.group(1)
 
@@ -37,18 +41,18 @@ def wps_status_get():
 
 def p2p_wpsinfo():
     print 'p2p_wpsinfo:'
-    get_stdout(["iwpriv", "wlan0", "p2p_set", "got_wpsinfo=3"])
+    get_stdout('iwpriv wlan0 p2p_set got_wpsinfo=3')
 
 def p2p_status_get():
     #print 'p2p_status_get:'
-    output = get_stdout(["iwpriv", "wlan0", "p2p_get", "status"])
+    output = get_stdout('iwpriv wlan0 p2p_get status')
     match = re.search(r'Status=(\d*)', output)
     return int(match.group(1))
 
 def p2p_set_nego(mac):
     print 'p2p_set_nego:'
     print 'mac: ', mac
-    get_stdout(["iwpriv", "wlan0", "p2p_set", "nego=" + mac])
+    get_stdout('iwpriv wlan0 p2p_set nego=%s' % mac)
 
     # Enter negotiation loop
     while 1:
@@ -83,28 +87,28 @@ def p2p_set_nego(mac):
 def p2p_enable():
 
     # Enable p2p
-    get_stdout(["iwpriv", "wlan0", "p2p_set", "enable=1"])
+    get_stdout('iwpriv wlan0 p2p_set enable=1')
 
     # Set intent
-    get_stdout(["iwpriv", "wlan0", "p2p_set", "intent=15"])
+    get_stdout('iwpriv wlan0 p2p_set intent=15')
 
     # Set operation channel
-    get_stdout(["iwpriv", "wlan0", "p2p_set", "op_ch=9"])
+    get_stdout('iwpriv wlan0 p2p_set op_ch=%d' % 9)
 
     # Sleep for 50ms
     time.sleep(0.05)
 
     # Set ssid
-    get_stdout(["iwpriv", "wlan0", "p2p_set", "ssid=DIRECT-RT"])
+    get_stdout('iwpriv wlan0 p2p_set ssid=DIRECT-RT')
 
     # Set DN
-    get_stdout(["iwpriv", "wlan0", "p2p_set", "setDN=Piracast"])
+    get_stdout('iwpriv wlan0 p2p_set setDN=Piracast')
 
     #print 'p2p_get role...'
-    #get_stdout(["iwpriv", "wlan0", "p2p_get", "role"])
+    #get_stdout('iwpriv wlan0 p2p_get role')
 
     #print 'scan...'
-    #get_stdout(["iwlist", "wlan0", "scan"])
+    #get_stdout('iwlist wlan0 scan')
 
 # -----------------------
 # p2p_peer_devaddr_get
@@ -114,12 +118,13 @@ def p2p_peer_devaddr_get():
     print 'p2p_peer_devaddr_get:'
     output = get_stdout(["iwpriv", "wlan0", "p2p_get", "peer_deva"])
     match = re.search(r'\n(.*)$', output)
-    mac = match.group(1)[0] + match.group(1)[1] + ':' \
-        + match.group(1)[2] + match.group(1)[3] + ':' \
-        + match.group(1)[4] + match.group(1)[5] + ':' \
-        + match.group(1)[6] + match.group(1)[7] + ':' \
-        + match.group(1)[8] + match.group(1)[9] + ':' \
-        + match.group(1)[10] + match.group(1)[11]
+    mac = '%s%s:%s%s:%s%s:%s%s:%s%s:%s%s' % match.group(1)[0:11]
+    #mac = match.group(1)[0] + match.group(1)[1] + ':' \
+    #    + match.group(1)[2] + match.group(1)[3] + ':' \
+    #    + match.group(1)[4] + match.group(1)[5] + ':' \
+    #    + match.group(1)[6] + match.group(1)[7] + ':' \
+    #    + match.group(1)[8] + match.group(1)[9] + ':' \
+    #    + match.group(1)[10] + match.group(1)[11]
 
     return mac
 
@@ -128,7 +133,7 @@ def p2p_peer_devaddr_get():
 #   Gets supported authentication type
 # -----------------------
 def p2p_req_cm_get():
-    print 'p2p_req_cm_get:', get_stdout(["iwpriv", "wlan0", "p2p_get", "req_cm"])
+    print 'p2p_req_cm_get:', get_stdout('iwpriv wlan0 p2p_get req_cm')
 
 # -----------------------
 # p2p_role_get
@@ -136,7 +141,7 @@ def p2p_req_cm_get():
 # -----------------------
 def p2p_role_get():
     print 'p2p_role_get:'
-    output = get_stdout(["iwpriv", "wlan0", "p2p_get", "role"])
+    output = get_stdout('iwpriv wlan0 p2p_get role')
     match = re.search(r'Role=(\d*)', output)
     role = int(match.group(1))
     return role
@@ -144,7 +149,7 @@ def p2p_role_get():
 def p2p_opch_get():
     print 'p2p_opch_get:'
     print '---------------------------'
-    output = get_stdout(["iwpriv", "wlan0", "p2p_get", "op_ch"])
+    output = get_stdout('iwpriv wlan0 p2p_get op_ch')
     print output
     print '---------------------------'
     #match = re.search(r'Role=(\d*)', output)
@@ -193,7 +198,7 @@ def read_all_sta():
     return ('dot11RSNAStatsSTAAddress' in output)
 
 def p2p_disable():
-    get_stdout(["iwpriv", "wlan0", "p2p_set", "enable=0"])
+    get_stdout('iwpriv wlan0 p2p_set enable=0')
 
 def p2p_peer_scan():
     count = 0
@@ -210,14 +215,6 @@ def p2p_peer_scan():
             return False
 
         count += 1
-
-# -----------------------
-#   MAIN
-# -----------------------
-
-cmd_killall_wpa_spplicant   = 'killall wpa_supplicant'
-cmd_killall_hostapd         = 'killall hostapd'
-cmd_iwlist_wlan0_scan       = 'iwlist wlan0 scan'
 
 def wfd_connection_wait():
     get_stdout(cmd_killall_wpa_spplicant)

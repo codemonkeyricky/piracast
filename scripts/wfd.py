@@ -33,15 +33,14 @@ def wpa_supplicant_start():
     time.sleep(1)
 
 def wps_auth():
-    print 'wps_auth:', get_stdout(["./hostapd_cli", "wps_pbc", "any"])
+    print 'wps_auth:\n%s' % get_stdout(["./hostapd_cli", "wps_pbc", "any"])
     time.sleep(1)
 
 def wps_status_get():
-    print 'wps_status_get:', get_stdout(["./wpa_cli", "status"])
+    print 'wps_status_get:\n%s' % get_stdout(["./wpa_cli", "status"])
 
 def p2p_wpsinfo():
-    print 'p2p_wpsinfo:'
-    get_stdout('iwpriv wlan0 p2p_set got_wpsinfo=3')
+    print 'p2p_wpsinfo:\n%s' % get_stdout('iwpriv wlan0 p2p_set got_wpsinfo=3')
 
 def p2p_status_get():
     #print 'p2p_status_get:'
@@ -50,8 +49,7 @@ def p2p_status_get():
     return int(match.group(1))
 
 def p2p_set_nego(mac):
-    print 'p2p_set_nego:'
-    print 'mac: ', mac
+    print 'p2p_set_nego:\nmac: %s' % mac
     get_stdout('iwpriv wlan0 p2p_set nego=%s' % mac)
 
     # Enter negotiation loop
@@ -62,7 +60,7 @@ def p2p_set_nego(mac):
 
         # Poll status
         peer_status = p2p_status_get()
-        print 'peer_status: ', peer_status
+        print 'peer_status: %d' % peer_status
 
         if peer_status == 10:
             print 'Negotiation suceeded!'
@@ -70,7 +68,7 @@ def p2p_set_nego(mac):
 
     # Get role
     role = p2p_role_get()
-    print 'Role: ', role
+    print 'Role: %s' % role
 
     # TODO: doesn't seem to return anything
     #p2p_opch_get()
@@ -133,7 +131,7 @@ def p2p_peer_devaddr_get():
 #   Gets supported authentication type
 # -----------------------
 def p2p_req_cm_get():
-    print 'p2p_req_cm_get:', get_stdout('iwpriv wlan0 p2p_get req_cm')
+    print 'p2p_req_cm_get: %s' % get_stdout('iwpriv wlan0 p2p_get req_cm')
 
 # -----------------------
 # p2p_role_get
@@ -180,7 +178,7 @@ def p2p_go_mode_set():
 def do_wps():
 
     while 1:
-        print 'do_wps'
+        print 'do_wps:'
         output = get_stdout(["./hostapd_cli", "wps_pbc", "any"])
 
         print output
@@ -236,7 +234,7 @@ def wfd_connection_wait():
 
         peer_status = p2p_status_get()
 
-        print 'peer_status: ', peer_status
+        print 'peer_status: %d' % peer_status
 
         if peer_status == 0:
             print 'p2p disabled! Re-enable p2p...'
@@ -261,7 +259,7 @@ def wfd_connection_wait():
 
     # Get peer device address
     mac = p2p_peer_devaddr_get()
-    print 'peer_devaddr: ', mac
+    print 'peer_devaddr: %s' % mac
 
     # Notify received wps info
     p2p_wpsinfo()

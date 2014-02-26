@@ -1,95 +1,96 @@
+# -*- coding: UTF-8 -*-
+
 # This file is part of Piracast.
-# 
+#
 #     Piracast is free software: you can redistribute it and/or modify
 #     it under the terms of the GNU General Public License as published by
 #     the Free Software Foundation, either version 3 of the License, or
 #     (at your option) any later version.
-# 
+#
 #     Piracast is distributed in the hope that it will be useful,
 #     but WITHOUT ANY WARRANTY; without even the implied warranty of
 #     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #     GNU General Public License for more details.
-# 
+#
 #     You should have received a copy of the GNU General Public License
 #     along with Piracast.  If not, see <http://www.gnu.org/licenses/>.
-#
 
 import re
 import subprocess
 import time
 
-def peer_mac_get() :
+def peer_mac_get():
     rsp = subprocess.Popen(["iwpriv", "wlan0", "p2p_get", "peer_ifa"], shell=False, stdout=subprocess.PIPE)
-    output = rsp.stdout.read(); 
+    output = rsp.stdout.read()
     match = re.search(r'MAC (.*)$', output)
     return match.group(1)
 
-def wpa_supplicant_start() : 
+def wpa_supplicant_start():
     print 'wpa_supplicant_start:'
     subprocess.call(["./wpa_supplicant", "-i", "wlan0", "-c", "./wpa_0_8.conf", "-B"])
     time.sleep(1)
 
-def wps_auth() : 
+def wps_auth():
     print 'wps_auth:'
     rsp = subprocess.Popen(["./hostapd_cli", "wps_pbc", "any"], shell=False, stdout=subprocess.PIPE)
-    output = rsp.stdout.read(); 
+    output = rsp.stdout.read()
     print output
     time.sleep(1)
 
-def wps_status_get() : 
+def wps_status_get():
     print 'wps_satus_get:'
     rsp = subprocess.Popen(["./wpa_cli", "status"], shell=False, stdout=subprocess.PIPE)
-    output = rsp.stdout.read(); 
+    output = rsp.stdout.read()
     print output
 
-def p2p_wpsinfo() : 
+def p2p_wpsinfo():
     print 'p2p_wpsinfo:'
     subprocess.call(["iwpriv", "wlan0", "p2p_set", "got_wpsinfo=3"])
 
-def p2p_status_get() : 
-#     print 'p2p_status_get:'
+def p2p_status_get():
+    #print 'p2p_status_get:'
     rsp = subprocess.Popen(["iwpriv", "wlan0", "p2p_get", "status"], shell=False, stdout=subprocess.PIPE)
-    output = rsp.stdout.read(); 
+    output = rsp.stdout.read()
     match = re.search(r'Status=(\d*)', output)
     peer_status = int(match.group(1))
     return peer_status
 
-def p2p_set_nego(mac) : 
+def p2p_set_nego(mac):
     print 'p2p_set_nego:'
     print 'mac: ', mac
     subprocess.call(["iwpriv", "wlan0", "p2p_set", "nego=" + mac])
 
-    # Enter negotiation loop.
-    while True : 
+    # Enter negotiation loop
+    while 1:
 
-        # Wait for result. 
+        # Wait for result
         time.sleep(0.5)
 
-        # Poll status.
+        # Poll status
         peer_status = p2p_status_get()
-        print 'peer_status: ', peer_status 
+        print 'peer_status: ', peer_status
 
-        if peer_status == 10 : 
-            print 'Negotiation suceeded!' 
-            break; 
-        
+        if peer_status == 10:
+            print 'Negotiation suceeded!'
+            break
+
     # Get role
     role = p2p_role_get()
     print 'Role: ', role
 
     # TODO: doesn't seem to return anything
-    p2p_opch_get(); 
+    p2p_opch_get()
 
-    # Get peer interface address.
-    peer_mac_get(); 
+    # Get peer interface address
+    peer_mac_get()
 
-    p2p_go_mode_set(); 
+    p2p_go_mode_set()
 
-# ----------------------- 
+# -----------------------
 # p2p_enable
-#   Enable wifi direct. 
-# ----------------------- 
-def p2p_enable() : 
+#   Enable wifi direct
+# -----------------------
+def p2p_enable():
 
     # Enable p2p
     subprocess.call(["iwpriv", "wlan0", "p2p_set", "enable=1"])
@@ -109,17 +110,17 @@ def p2p_enable() :
     # Set DN
     subprocess.call(["iwpriv", "wlan0", "p2p_set", "setDN=Piracast"])
 
-    # print 'p2p_get role...'
-    # subprocess.call(["iwpriv", "wlan0", "p2p_get", "role"])
+    #print 'p2p_get role...'
+    #subprocess.call(["iwpriv", "wlan0", "p2p_get", "role"])
 
-#     print 'scan...'
-#     subprocess.call(["iwlist", "wlan0", "scan"])
+    #print 'scan...'
+    #subprocess.call(["iwlist", "wlan0", "scan"])
 
-# ----------------------- 
+# -----------------------
 # p2p_peer_devaddr_get
 #   Gets peer device address
 # ----------------------- 
-def p2p_peer_devaddr_get() : 
+def p2p_peer_devaddr_get():
     print 'p2p_peer_devaddr_get:'
     console_output = subprocess.Popen(["iwpriv", "wlan0", "p2p_get", "peer_deva"], shell=False, stdout=subprocess.PIPE)
     match = re.search(r'\n(.*)$', console_output.stdout.read())
@@ -130,79 +131,77 @@ def p2p_peer_devaddr_get() :
         + match.group(1)[8] + match.group(1)[9] + ':' \
         + match.group(1)[10] + match.group(1)[11]
 
-    return mac; 
+    return mac
 
-# ----------------------- 
+# -----------------------
 # p2p_req_cm_get
-#   Gets supported authentication type.
-# ----------------------- 
-def p2p_req_cm_get() : 
+#   Gets supported authentication type
+# -----------------------
+def p2p_req_cm_get():
     print 'p2p_req_cm_get:'
     console_output = subprocess.Popen(["iwpriv", "wlan0", "p2p_get", "req_cm"], shell=False, stdout=subprocess.PIPE)
-    print console_output.stdout.read(); 
+    print console_output.stdout.read()
 
-# ----------------------- 
+# -----------------------
 # p2p_req_cm_get
-#   Gets supported authentication type.
-# ----------------------- 
-def p2p_req_cm_get() : 
+#   Gets supported authentication type
+# -----------------------
+def p2p_req_cm_get():
     print 'p2p_req_cm_get:'
     console_output = subprocess.Popen(["iwpriv", "wlan0", "p2p_get", "req_cm"], shell=False, stdout=subprocess.PIPE)
-    print console_output.stdout.read(); 
+    print console_output.stdout.read()
 
-# ----------------------- 
+# -----------------------
 # p2p_req_cm_get
-#   Gets supported authentication type.
-# ----------------------- 
-def p2p_role_get() : 
+#   Gets supported authentication type
+# -----------------------
+def p2p_role_get():
     print 'p2p_role_get:'
     console_output = subprocess.Popen(["iwpriv", "wlan0", "p2p_get", "role"], shell=False, stdout=subprocess.PIPE)
     match = re.search(r'Role=(\d*)', console_output.stdout.read())
     role = int(match.group(1))
     return role
 
-def p2p_opch_get() : 
+def p2p_opch_get():
     print 'p2p_opch_get:'
     print '---------------------------'
     console_output = subprocess.Popen(["iwpriv", "wlan0", "p2p_get", "op_ch"], shell=False, stdout=subprocess.PIPE)
     print console_output.stdout.read()
     print '---------------------------'
-    # match = re.search(r'Role=(\d*)', console_output.stdout.read())
-    # role = int(match.group(1))
-    # return role
+    #match = re.search(r'Role=(\d*)', console_output.stdout.read())
+    #role = int(match.group(1))
+    #return role
 
-def wait_forever() : 
-
-    while True : 
-
+def wait_forever():
+    while 1:
         time.sleep(1)
 
-def p2p_go_mode_set() : 
+def p2p_go_mode_set():
 
     # Start host APD
     subprocess.call(["./hostapd", "-B", "p2p_hostapd.conf"])
 
-    # Wait for initialization.
+    # Wait for initialization
     time.sleep(1)
 
-    do_wps(); 
+    do_wps()
 
     # Wait for host apd interval
     time.sleep(1)
 
-    while True : 
+    while 1:
 
         status = read_all_sta()
 
-        if status == True : 
+        if status:
             print 'Wireless display negotiation completed!'
-            break; 
+            break
 
         time.sleep(1)
 
-def do_wps() : 
+def do_wps():
 
-    while (1) : 
+    while 1:
 
         print 'do_wps'
         console_output = subprocess.Popen(["./hostapd_cli", "wps_pbc", "any"], shell=False, stdout=subprocess.PIPE)
@@ -212,13 +211,13 @@ def do_wps() :
 
         print output
 
-        if 'OK' in output : 
-            print 'wps passed!' 
-            break; 
+        if 'OK' in output:
+            print 'wps passed!'
+            break
 
         time.sleep(1)
 
-def read_all_sta() : 
+def read_all_sta():
 
     print 'read_all_sta:'
     console_output = subprocess.Popen(["./hostapd_cli", "all_sta"], shell=False, stdout=subprocess.PIPE)
@@ -226,36 +225,36 @@ def read_all_sta() :
 
     print output
 
-    if 'dot11RSNAStatsSTAAddress' in output : 
-        return True; 
+    if 'dot11RSNAStatsSTAAddress' in output:
+        return True
 
-    return False; 
+    return False
 
-def p2p_disable() : 
+def p2p_disable():
 
     subprocess.call(["iwpriv", "wlan0", "p2p_set", "enable=0"])
-    
-def p2p_peer_scan() :
-    
-    count = 0; 
-    
-    while True : 
-        
+
+def p2p_peer_scan():
+
+    count = 0
+
+    while 1:
+
         console_output = subprocess.Popen(cmd_iwlist_wlan0_scan.split(), shell=False, stdout=subprocess.PIPE)
-        output = console_output.stdout.read(); 
-        
+        output = console_output.stdout.read()
+
         print output
-        
-        if 'No scan results' not in output :
-            
-            return True; 
-        
+
+        if 'No scan results' not in output:
+
+            return True
+
         if count > 3 :
-            
-            return False; 
-            
-        count += 1; 
-        
+
+            return False
+
+        count += 1
+
 
 # ----------------------- 
 #   MAIN
@@ -265,82 +264,72 @@ cmd_killall_wpa_spplicant   = 'killall wpa_supplicant'
 cmd_killall_hostapd         = 'killall hostapd'
 cmd_iwlist_wlan0_scan       = 'iwlist wlan0 scan'
 
-def wfd_connection_wait() : 
-    
+def wfd_connection_wait():
+
     subprocess.call(cmd_killall_wpa_spplicant.split())
 
-    # Kill app 
+    # Kill app
     subprocess.call(cmd_killall_hostapd.split())
-    
+
     # Disable p2p
-    p2p_disable(); 
-    
+    p2p_disable()
+
     time.sleep(0.5)
-    
+
     # Enable p2p
-    p2p_enable() ; 
-    
-#     p2p_peer_scan() ; 
+    p2p_enable()
+
+    #p2p_peer_scan()
 
     print 'Waiting for incoming connection...'
-    
-    while (1) : 
-    
+
+    while 1:
+
         peer_status = p2p_status_get()
-        
+
         print 'peer_status: ', peer_status
-    
-        if peer_status == 0 : 
-            
+
+        if peer_status == 0:
             print 'p2p disabled! Re-enable p2p...'
+            p2p_enable()
 
-            p2p_enable() ; 
-        
-#         if peer_status == 11 : 
-#              
-#             print 'p2p request received! Scan for peer ...'
-#  
-#             p2p_peer_scan() ; 
-    
-        if peer_status == 8 : 
-    
-            # Discovery request or gonego fail. 
+        #if peer_status == 11:
+        #    print 'p2p request received! Scan for peer ...'
+        #    p2p_peer_scan()
+
+        if peer_status == 8:
+            # Discovery request or gonego fail
             print 'Discovery request received!'
-            
-            peer_found = p2p_peer_scan() ;
-            
-            if peer_found == False : 
+            peer_found = p2p_peer_scan()
 
-                p2p_disable(); 
-                
-            else : 
-                
+            if peer_found == False:
+                p2p_disable()
+            else:
                 break
-    
+
         time.sleep(1)
-        
+
     print 'Getting peer device address...'
-    
+
     # Get peer device address.
-    mac = p2p_peer_devaddr_get(); 
+    mac = p2p_peer_devaddr_get()
     print 'peer_devaddr: ', mac
-    
-    # Notify received wps info. 
-    p2p_wpsinfo(); 
-    
+
+    # Notify received wps info
+    p2p_wpsinfo()
+
     print 'Getting peer authentication type...'
-    
-    # Get request configuration. 
-    p2p_req_cm_get(); 
-    
+
+    # Get request configuration
+    p2p_req_cm_get()
+
     print 'Confirming peer authentication...'
-    
-#     print 'Getting status...'
-    
-    # Get status. 
-#     peer_status = p2p_status_get()
-#     print 'peer_status: ', peer_status 
-    
-    # Set negotiation. 
+
+    #print 'Getting status...'
+
+    # Get status
+    #peer_status = p2p_status_get()
+    #print 'peer_status: ', peer_status
+
+    # Set negotiation
     p2p_set_nego(mac)
-    

@@ -1,0 +1,4 @@
+obj
+*.pyc
+scripts/core
+target/core

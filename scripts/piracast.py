@@ -63,7 +63,7 @@ console_output = subprocess.Popen(cmd_kill_core_app.split(), shell=False, stdout
 output = console_output.stdout.read()
 print output
 
-while q:
+while 1:
 
     # Launch application.
     cmd = 'sudo nice -n -20 ./core'

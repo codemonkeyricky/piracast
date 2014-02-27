@@ -16,49 +16,46 @@
 #     along with Piracast.  If not, see <http://www.gnu.org/licenses/>.
 
 import re
-import subprocess
 import time
 
+from util import get_stdout
+
 def peer_mac_get():
-    rsp = subprocess.Popen(["iwpriv", "wlan0", "p2p_get", "peer_ifa"], shell=False, stdout=subprocess.PIPE)
-    output = rsp.stdout.read()
+    output = get_stdout('iwpriv wlan0 p2p_get peer_ifa')
     match = re.search(r'MAC (.*)$', output)
     return match.group(1)
 
 def wpa_supplicant_start():
     print 'wpa_supplicant_start:'
-    subprocess.call(["./wpa_supplicant", "-i", "wlan0", "-c", "./wpa_0_8.conf", "-B"])
+    get_stdout(["./wpa_supplicant", "-i", "wlan0", "-c", "./wpa_0_8.conf", "-B"])
     time.sleep(1)
 
 def wps_auth():
     print 'wps_auth:'
-    rsp = subprocess.Popen(["./hostapd_cli", "wps_pbc", "any"], shell=False, stdout=subprocess.PIPE)
-    output = rsp.stdout.read()
+    output = get_stdout(["./hostapd_cli", "wps_pbc", "any"])
     print output
     time.sleep(1)
 
 def wps_status_get():
     print 'wps_satus_get:'
-    rsp = subprocess.Popen(["./wpa_cli", "status"], shell=False, stdout=subprocess.PIPE)
-    output = rsp.stdout.read()
+    output = get_stdout(["./wpa_cli", "status"])
     print output
 
 def p2p_wpsinfo():
     print 'p2p_wpsinfo:'
-    subprocess.call(["iwpriv", "wlan0", "p2p_set", "got_wpsinfo=3"])
+    get_stdout('iwpriv wlan0 p2p_set got_wpsinfo=3')
 
 def p2p_status_get():
     #print 'p2p_status_get:'
-    rsp = subprocess.Popen(["iwpriv", "wlan0", "p2p_get", "status"], shell=False, stdout=subprocess.PIPE)
-    output = rsp.stdout.read()
+    output = get_stdout('iwpriv wlan0 p2p_get status'])
     match = re.search(r'Status=(\d*)', output)
     peer_status = int(match.group(1))
     return peer_status
 
 def p2p_set_nego(mac):
     print 'p2p_set_nego:'
-    print 'mac: ', mac
-    subprocess.call(["iwpriv", "wlan0", "p2p_set", "nego=" + mac])
+    print 'mac: %s' % mac
+    subprocess.call('iwpriv wlan0 p2p_set nego=%s' % mac)
 
     # Enter negotiation loop
     while 1:
@@ -68,7 +65,7 @@ def p2p_set_nego(mac):
 
         # Poll status
         peer_status = p2p_status_get()
-        print 'peer_status: ', peer_status
+        print 'peer_status: %d' % peer_status
 
         if peer_status == 10:
             print 'Negotiation suceeded!'
@@ -76,7 +73,7 @@ def p2p_set_nego(mac):
 
     # Get role
     role = p2p_role_get()
-    print 'Role: ', role
+    print 'Role: %s' % role
 
     # TODO: doesn't seem to return anything
     p2p_opch_get()
@@ -179,7 +176,7 @@ def wait_forever():
 def p2p_go_mode_set():
 
     # Start host APD
-    subprocess.call(["./hostapd", "-B", "p2p_hostapd.conf"])
+    get_stdout(["./hostapd", "-B", "p2p_hostapd.conf"])
 
     # Wait for initialization
     time.sleep(1)
@@ -204,10 +201,7 @@ def do_wps():
     while 1:
 
         print 'do_wps'
-        console_output = subprocess.Popen(["./hostapd_cli", "wps_pbc", "any"], shell=False, stdout=subprocess.PIPE)
-
-        status_ok = "OK"
-        output = console_output.stdout.read()
+        output = get_stdout(["./hostapd_cli", "wps_pbc", "any"])
 
         print output
 
@@ -220,8 +214,7 @@ def do_wps():
 def read_all_sta():
 
     print 'read_all_sta:'
-    console_output = subprocess.Popen(["./hostapd_cli", "all_sta"], shell=False, stdout=subprocess.PIPE)
-    output = console_output.stdout.read()
+    output = get_stdout(["./hostapd_cli", "all_sta"])
 
     print output
 
@@ -232,7 +225,7 @@ def read_all_sta():
 
 def p2p_disable():
 
-    subprocess.call(["iwpriv", "wlan0", "p2p_set", "enable=0"])
+    get_stdout('iwpriv wlan0 p2p_set enable=0')
 
 def p2p_peer_scan():
 
@@ -240,8 +233,7 @@ def p2p_peer_scan():
 
     while 1:
 
-        console_output = subprocess.Popen(cmd_iwlist_wlan0_scan.split(), shell=False, stdout=subprocess.PIPE)
-        output = console_output.stdout.read()
+        output = get_stdout(cmd_iwlist_wlan0_scan)
 
         print output
 
@@ -256,9 +248,9 @@ def p2p_peer_scan():
         count += 1
 
 
-# ----------------------- 
+# -----------------------
 #   MAIN
-# ----------------------- 
+# -----------------------
 
 cmd_killall_wpa_spplicant   = 'killall wpa_supplicant'
 cmd_killall_hostapd         = 'killall hostapd'
@@ -266,10 +258,10 @@ cmd_iwlist_wlan0_scan       = 'iwlist wlan0 scan'
 
 def wfd_connection_wait():
 
-    subprocess.call(cmd_killall_wpa_spplicant.split())
+    get_stdout(cmd_killall_wpa_spplicant)
 
     # Kill app
-    subprocess.call(cmd_killall_hostapd.split())
+    get_stdout(cmd_killall_hostapd)
 
     # Disable p2p
     p2p_disable()

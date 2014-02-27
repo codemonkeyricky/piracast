@@ -18,61 +18,52 @@
 
 import os
 import re
-import subprocess
 import time
 
 import wfd
 import core_channel
 import sink
 
+from util import get_stdout
+
+lease_file ='/var/lib/dhcp/dhcpd.leases'
+
+cmd_wlan0_up = 'ifup wlan0'
+cmd_incr_rmem_def = 'sudo sysctl -w net.core.rmem_default=1000000'
+cmd_dhcp_start = 'service isc-dhcp-server start'
+cmd_dhcp_stop = 'service isc-dhcp-server stop'
+cmd_launch_core_app = 'nice -n -20 ./core 1>/dev/null &'
+#cmd_kill_core_app = 'python core_terminate.py'
+cmd_kill_core_app = 'killall core'
+
 # Getting the leased IP address
 def leased_ip_get():
-
-    contents = open("/var/lib/dhcp/dhcpd.leases").read()
-
+    contents = open(lease_file).read()
     ip_list = re.findall(r'lease (\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})', contents)
 
-    # Return the most recent leased IP
+    # Return the most recently leased IP
     return ip_list[-1]
 
 def lease_file_timestamp_get():
-
-    cmd_ls_dhcp_lease = 'ls -l /var/lib/dhcp/dhcpd.leases'
-
-    rsp = subprocess.Popen(cmd_ls_dhcp_lease.split(), shell=False, stdout=subprocess.PIPE)
-    ts = rsp.stdout.read()
-
-    return ts
-
-cmd_dhcp_start = 'service isc-dhcp-server start'
-cmd_dhcp_stop = 'service isc-dhcp-server stop'
-#cmd_kill_core_app = 'python core_terminate.py'
-cmd_kill_core_app = 'killall core'
-cmd_wlan0_up = 'ifup wlan0'
+    return get_stdout('ls -l "%s"' % lease_file)
 
 print 'Bring up wlan0 just in case...'
-subprocess.Popen(cmd_wlan0_up.split(), shell=False, stdout=subprocess.PIPE)
+get_stdout(cmd_wlan0_up)
 
 print 'Increase rmem_default...'
-cmd = 'sudo sysctl -w net.core.rmem_default=1000000'
-subprocess.Popen(cmd.split(), shell=False, stdout=subprocess.PIPE)
+get_stdout(cmd_incr_rmem_def)
 
 print 'Kill running application...'
 #core_channel.end()
-console_output = subprocess.Popen(cmd_kill_core_app.split(), shell=False, stdout=subprocess.PIPE)
-output = console_output.stdout.read()
-print output
+print get_stdout(cmd_kill_core_app)
 
 while 1:
 
     # Launch application.
-    cmd = 'sudo nice -n -20 ./core'
-    subprocess.Popen(cmd.split(), shell=False) # , stdout=open(os.devnull, 'w'))
+    get_stdout(cmd_launch_core_app)
 
     # Start DHCP
-    console_output = subprocess.Popen(cmd_dhcp_start.split(), shell=False, stdout=subprocess.PIPE)
-    output = console_output.stdout.read()
-    print output
+    print output = get_stdout(cmd_dhcp_start)
 
     # Get previous timestamp. 
     prev_ts = lease_file_timestamp_get()
@@ -107,12 +98,10 @@ while 1:
     sink.source_connect(ip)
 
     # Stop DHCP
-    console_output = subprocess.call(cmd_dhcp_stop.split(), shell=False, stdout=subprocess.PIPE)
-    #output = console_output.stdout.read()
+    output = get_stdout(cmd_dhcp_stop)
     #print output
 
-    # Kill app.
+    # Kill app
     #core_channel.end()
-    console_output = subprocess.Popen(cmd_kill_core_app.split(), shell=False, stdout=subprocess.PIPE)
-    output = console_output.stdout.read()
+    output = get_stdout(cmd_kill_core_app)
     print output

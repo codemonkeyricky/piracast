@@ -68,8 +68,9 @@ def p2p_set_nego(mac) :
         # Poll status.
         peer_status = p2p_status_get()
         print 'peer_status: ', peer_status
-
-        if peer_status == 10 :
+	
+	# For Windows 8.1 support, we consider 19 as negotiation completed
+        if peer_status == 10 or peer_status == 19:
             print 'Negotiation suceeded!'
             break;
 
@@ -301,7 +302,9 @@ def wfd_connection_wait() :
 #             print 'p2p request received! Scan for peer ...'
 #
 #             p2p_peer_scan() ;
-
+	
+	# 8 status is the original Discovery Request but 22 needs to be handled this way or Nexus 4 4.4 won't always work
+	# 19 status was added to try to implement windows 8.1 support
         if peer_status == 8 or peer_status == 22 or peer_status == 19:
 
             # Discovery request or gonego fail.

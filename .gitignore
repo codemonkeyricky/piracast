@@ -1,0 +1,22 @@
+# Compiled files
+audio_sink/obj/
+common/obj/
+desc/obj/
+mgmt_audio_decoder/obj/
+mgmt_audio_scheduler/obj/
+mgmt_ctl/obj/
+mgmt_data/obj/
+mgmt_env/obj/
+mgmt_m2ts_decoder/obj/
+mgmt_sys/obj/
+mgmt_video_decoder/obj/
+mgmt_video_scheduler/obj/
+pipe/obj/
+scripts/core
+scripts/core_channel.pyc
+scripts/sink.pyc
+scripts/wfd.pyc
+target/core
+target/obj/
+video_sink/obj/
+

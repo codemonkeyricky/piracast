@@ -47,7 +47,7 @@ def p2p_wpsinfo():
 
 def p2p_status_get():
     #print 'p2p_status_get:'
-    output = get_stdout('iwpriv wlan0 p2p_get status'])
+    output = get_stdout('iwpriv wlan0 p2p_get status')
     match = re.search(r'Status=(\d*)', output)
     peer_status = int(match.group(1))
     return peer_status
@@ -55,7 +55,7 @@ def p2p_status_get():
 def p2p_set_nego(mac):
     print 'p2p_set_nego:'
     print 'mac: %s' % mac
-    subprocess.call('iwpriv wlan0 p2p_set nego=%s' % mac)
+    get_stdout('iwpriv wlan0 p2p_set nego=%s' % mac)
 
     # Enter negotiation loop
     while 1:
@@ -90,28 +90,28 @@ def p2p_set_nego(mac):
 def p2p_enable():
 
     # Enable p2p
-    subprocess.call(["iwpriv", "wlan0", "p2p_set", "enable=1"])
+    get_stdout(["iwpriv", "wlan0", "p2p_set", "enable=1"])
 
     # Set intent
-    subprocess.call(["iwpriv", "wlan0", "p2p_set", "intent=15"])
+    get_stdout(["iwpriv", "wlan0", "p2p_set", "intent=15"])
 
     # Set operation channel
-    subprocess.call(["iwpriv", "wlan0", "p2p_set", "op_ch=9"])
+    get_stdout(["iwpriv", "wlan0", "p2p_set", "op_ch=9"])
 
     # Sleep for 50ms
     time.sleep(0.05)
 
     # Set ssid
-    subprocess.call(["iwpriv", "wlan0", "p2p_set", "ssid=DIRECT-RT"])
+    get_stdout(["iwpriv", "wlan0", "p2p_set", "ssid=DIRECT-RT"])
 
     # Set DN
-    subprocess.call(["iwpriv", "wlan0", "p2p_set", "setDN=Piracast"])
+    get_stdout(["iwpriv", "wlan0", "p2p_set", "setDN=Piracast"])
 
     #print 'p2p_get role...'
-    #subprocess.call(["iwpriv", "wlan0", "p2p_get", "role"])
+    #get_stdout(["iwpriv", "wlan0", "p2p_get", "role"])
 
     #print 'scan...'
-    #subprocess.call(["iwlist", "wlan0", "scan"])
+    #get_stdout(["iwlist", "wlan0", "scan"])
 
 # -----------------------
 # p2p_peer_devaddr_get
@@ -119,8 +119,8 @@ def p2p_enable():
 # ----------------------- 
 def p2p_peer_devaddr_get():
     print 'p2p_peer_devaddr_get:'
-    console_output = subprocess.Popen(["iwpriv", "wlan0", "p2p_get", "peer_deva"], shell=False, stdout=subprocess.PIPE)
-    match = re.search(r'\n(.*)$', console_output.stdout.read())
+    output = get_stdout('iwpriv wlan0 p2p_get peer_deva')
+    match = re.search(r'\n(.*)$', output)
     mac = match.group(1)[0] + match.group(1)[1] + ':' \
         + match.group(1)[2] + match.group(1)[3] + ':' \
         + match.group(1)[4] + match.group(1)[5] + ':' \
@@ -136,8 +136,7 @@ def p2p_peer_devaddr_get():
 # -----------------------
 def p2p_req_cm_get():
     print 'p2p_req_cm_get:'
-    console_output = subprocess.Popen(["iwpriv", "wlan0", "p2p_get", "req_cm"], shell=False, stdout=subprocess.PIPE)
-    print console_output.stdout.read()
+    print get_stdout('iwpriv wlan0 p2p_get req_cm')
 
 # -----------------------
 # p2p_req_cm_get
@@ -145,8 +144,7 @@ def p2p_req_cm_get():
 # -----------------------
 def p2p_req_cm_get():
     print 'p2p_req_cm_get:'
-    console_output = subprocess.Popen(["iwpriv", "wlan0", "p2p_get", "req_cm"], shell=False, stdout=subprocess.PIPE)
-    print console_output.stdout.read()
+    print get_stdout('iwpriv wlan0 p2p_get req_cm')
 
 # -----------------------
 # p2p_req_cm_get
@@ -154,18 +152,18 @@ def p2p_req_cm_get():
 # -----------------------
 def p2p_role_get():
     print 'p2p_role_get:'
-    console_output = subprocess.Popen(["iwpriv", "wlan0", "p2p_get", "role"], shell=False, stdout=subprocess.PIPE)
-    match = re.search(r'Role=(\d*)', console_output.stdout.read())
+    output = get_stdout('iwpriv wlan0 p2p_get role')
+    match = re.search(r'Role=(\d*)', output)
     role = int(match.group(1))
     return role
 
 def p2p_opch_get():
     print 'p2p_opch_get:'
     print '---------------------------'
-    console_output = subprocess.Popen(["iwpriv", "wlan0", "p2p_get", "op_ch"], shell=False, stdout=subprocess.PIPE)
-    print console_output.stdout.read()
+    output = get_stdout('iwpriv wlan0 p2p_get op_ch')
+    print output
     print '---------------------------'
-    #match = re.search(r'Role=(\d*)', console_output.stdout.read())
+    #match = re.search(r'Role=(\d*)', output)
     #role = int(match.group(1))
     #return role
 

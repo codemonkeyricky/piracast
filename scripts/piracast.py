@@ -63,7 +63,7 @@ while 1:
     get_stdout(cmd_launch_core_app)
 
     # Start DHCP
-    print output = get_stdout(cmd_dhcp_start)
+    print get_stdout(cmd_dhcp_start)
 
     # Get previous timestamp. 
     prev_ts = lease_file_timestamp_get()

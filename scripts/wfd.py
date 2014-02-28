@@ -302,7 +302,7 @@ def wfd_connection_wait() :
 #
 #             p2p_peer_scan() ;
 
-        if peer_status == 8 or peer_status == 22:
+        if peer_status == 8 or peer_status == 22 or peer_status == 19:
 
             # Discovery request or gonego fail.
             print 'Discovery request received!'

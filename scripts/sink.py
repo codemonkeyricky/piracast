@@ -1,18 +1,19 @@
+# -*- coding: UTF-8 -*-
+
 # This file is part of Piracast.
-# 
+#
 #     Piracast is free software: you can redistribute it and/or modify
 #     it under the terms of the GNU General Public License as published by
 #     the Free Software Foundation, either version 3 of the License, or
 #     (at your option) any later version.
-# 
+#
 #     Piracast is distributed in the hope that it will be useful,
 #     but WITHOUT ANY WARRANTY; without even the implied warranty of
 #     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #     GNU General Public License for more details.
-# 
+#
 #     You should have received a copy of the GNU General Public License
 #     along with Piracast.  If not, see <http://www.gnu.org/licenses/>.
-#
 
 import re
 import socket
@@ -75,105 +76,104 @@ m16_rsp =   'RTSP/1.0 200 OK\r\n'                               \
             'CSeq: {}\r\n'                                       \
             '\r\n'
 
-def source_connect (ip) :
+def source_connect (ip):
 
     # Create a socket object
-    s = socket.socket()         
-    
-    # Connect to port. 
+    s = socket.socket()
+
+    # Connect to port
     s.connect((ip, 7236))
-    
-    # Connect via wireless interface.
+
+    # Connect via wireless interface
     s.setsockopt(socket.SOL_SOCKET, 25, 'wlan0')
-    
+
     # Wait to receive data
     data = s.recv(1024)
-    
+
     print 'Received', repr(data)
-    
+
     # Send m1 response
     s.send(m1_options_rsp)
-    
+
     # Send m2 request
     s.send(m2_req)
-    
+
     # Receive m2 response
     m2_rsp = s.recv(1024)
-    
+
     print 'M2 Resp:', repr(m2_rsp)
-    
+
     # Receive: M3 GET_PARAMETER Request
     m3_req = s.recv(1024)
-    
+
     print 'M3 Req:\n', repr(m3_req), '\n'
-    
+
     print 'M3 Resp:\n', repr(m3_rsp), '\n'
-    
+
     # Send: M3 Response
     s.send(m3_rsp)
-    
+
     # Receive: M4 RTSP SET_PARAMETER Request
     m4_req = s.recv(1024)
-    
+
     print 'M4 Req:\n', repr(m4_req), '\n'
-    
+
     print 'M4 Resp:\n', repr(m4_rsp), '\n'
-    
+
     # Send: M4 response
     s.send(m4_rsp)
-    
+
     # Receive: M5 RTSP SET_PARAMETER Request (setup)
     m5_req = s.recv(1024)
-    
-    # Send: M5 Response 
+
+    # Send: M5 Response
     s.send(m5_rsp)
-    
+
     # Send: M6 RTSP SETUP
     s.send(m6_req.format(ip))
-    
+
     # Receive: M6 RTSP SETUP response
     m6_rsp = s.recv(1024)
-    
+
     print 'M6 Rsp:', repr(m6_rsp)
-    
+
     # TODO: extract session ID
     match = re.search(r'Session: (\d*);', m6_rsp)
-    
+
     # Send: M6 Request
     s.send(m7_req.format(ip, match.group(1)))
-    
+
     m7_rsp = s.recv(1024)
-    
+
     print 'M7 Rsp:', repr(m7_rsp)
-    
+
     cseq = 5
 
     keep_alive_sent = 0
-    
-    while True :
+
+    while 1:
         req = s.recv(1024)
-        
+
         print 'req: ', req
 
-        if req.__len__() == 0 : 
-
+        if req.__len__() == 0:
             print 'socket closed!'
-            break; 
-        
-        if 'TEARDOWN' in req : 
-            print 'Tear down received!'
-            break; 
+            break
 
-        # if keep_alive_sent == 120 : 
-        #   print 'demo times up!'
-        #   break; 
+        if 'TEARDOWN' in req:
+            print 'Teardown received!'
+            break
 
-        s.send(m16_rsp.format(cseq)); 
+        #if keep_alive_sent == 120:
+        #    print 'demo time\'s up!'
+        #    break
 
-        print 'sent keep alive!'
+        s.send(m16_rsp.format(cseq))
+
+        print 'sent keepalive!'
 
         cseq += 1
 
         keep_alive_sent += 1
-    
+
     s.close()

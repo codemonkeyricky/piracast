@@ -27,6 +27,7 @@ from util import get_stdout
 
 cmd_wlan0_up = 'ifup wlan0'
 cmd_inc_rmem_default = 'sysctl -w net.core.rmem_default=1000000'
+#cmd_launch_core_app = 'nice -n -20 ./core 1>/dev/null &'
 cmd_launch_core_app = 'nice -n -20 ./core'
 #cmd_kill_core_app = 'python core_terminate.py'
 cmd_kill_core_app = 'killall core'
@@ -96,7 +97,7 @@ while 1:
     # Connect to source
     sink.source_connect(ip)
 
-    # Stop DHCP
+    # Stop DHCPd
     output = get_stdout(cmd_dhcp_stop)
     #print output
 

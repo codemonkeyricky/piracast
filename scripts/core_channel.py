@@ -1,3 +1,5 @@
+# -*- coding: UTF-8 -*-
+
 # This file is part of Piracast.
 #
 #     Piracast is free software: you can redistribute it and/or modify

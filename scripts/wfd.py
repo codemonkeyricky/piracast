@@ -1,3 +1,5 @@
+# -*- coding: UTF-8 -*-
+
 # This file is part of Piracast.
 #
 #     Piracast is free software: you can redistribute it and/or modify
@@ -33,14 +35,19 @@ def wpa_supplicant_start():
     time.sleep(1)
 
 def wps_auth():
-    print 'wps_auth:\n%s' % get_stdout(["./hostapd_cli", "wps_pbc", "any"])
+    print 'wps_auth:'
+    output = get_stdout(["./hostapd_cli", "wps_pbc", "any"])
+    print output
     time.sleep(1)
 
 def wps_status_get():
-    print 'wps_status_get:\n%s' % get_stdout(["./wpa_cli", "status"])
+    print 'wps_status_get:'
+    output = get_stdout(["./wpa_cli", "status"])
+    print output
 
 def p2p_wpsinfo():
-    print 'p2p_wpsinfo:\n%s' % get_stdout('iwpriv wlan0 p2p_set got_wpsinfo=3')
+    print 'p2p_wpsinfo:'
+    get_stdout('iwpriv wlan0 p2p_set got_wpsinfo=3')
 
 def p2p_status_get():
     #print 'p2p_status_get:'
@@ -49,7 +56,8 @@ def p2p_status_get():
     return int(match.group(1))
 
 def p2p_set_nego(mac):
-    print 'p2p_set_nego:\nmac: %s' % mac
+    print 'p2p_set_nego:'
+    print 'mac: %s' % mac
     get_stdout('iwpriv wlan0 p2p_set nego=%s' % mac)
 
     # Enter negotiation loop
@@ -62,7 +70,8 @@ def p2p_set_nego(mac):
         peer_status = p2p_status_get()
         print 'peer_status: %d' % peer_status
 
-        if peer_status == 10:
+        # For Windows 8.1 support, we consider 19 as negotiation completed
+        if peer_status in [10, 19]:
             print 'Negotiation suceeded!'
             break
 
@@ -91,7 +100,7 @@ def p2p_enable():
     get_stdout('iwpriv wlan0 p2p_set intent=15')
 
     # Set operation channel
-    get_stdout('iwpriv wlan0 p2p_set op_ch=%d' % 9)
+    get_stdout('iwpriv wlan0 p2p_set op_ch=%d' % 11)
 
     # Sleep for 50ms
     time.sleep(0.05)
@@ -131,12 +140,9 @@ def p2p_peer_devaddr_get():
 #   Gets supported authentication type
 # -----------------------
 def p2p_req_cm_get():
-    print 'p2p_req_cm_get: %s' % get_stdout('iwpriv wlan0 p2p_get req_cm')
+    print 'p2p_req_cm_get:'
+    print get_stdout('iwpriv wlan0 p2p_get req_cm')
 
-# -----------------------
-# p2p_role_get
-#   Gets p2p role
-# -----------------------
 def p2p_role_get():
     print 'p2p_role_get:'
     output = get_stdout('iwpriv wlan0 p2p_get role')
@@ -169,6 +175,7 @@ def p2p_go_mode_set():
 
     while 1:
         status = read_all_sta()
+
         if status:
             print 'Wireless display negotiation completed!'
             break
@@ -187,12 +194,11 @@ def do_wps():
             print 'wps passed!'
             return
 
+        time.sleep(1)
+
 def read_all_sta():
     print 'read_all_sta:'
     output = get_stdout(["./hostapd_cli", "all_sta"])
-
-    print output
-
     return ('dot11RSNAStatsSTAAddress' in output)
 
 def p2p_disable():
@@ -244,11 +250,15 @@ def wfd_connection_wait():
         #    print 'p2p request received! Scan for peer ...'
         #    p2p_peer_scan()
 
-        if peer_status == 8:
+        # status 8 is the original Discovery Request
+        # status 22 needs to be handled this way, or Nexus 4 4.4 won't always work
+        # status 19 was added to try to implement windows 8.1 support
+        if peer_status in [8, 19, 22]:
             # Discovery request or gonego fail
             print 'Discovery request received!'
+            peer_found = p2p_peer_scan()
 
-            if p2p_peer_scan():
+            if peer_found:
                 break
 
             p2p_disable()
@@ -279,4 +289,3 @@ def wfd_connection_wait():
 
     # Set negotiation
     p2p_set_nego(mac)
-

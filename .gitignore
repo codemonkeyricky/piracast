@@ -1,3 +1,4 @@
+# compiled files
 obj
 *.pyc
 scripts/core

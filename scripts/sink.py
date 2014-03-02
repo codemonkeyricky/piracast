@@ -1,3 +1,5 @@
+# -*- coding: UTF-8 -*-
+
 # This file is part of Piracast.
 #
 #     Piracast is free software: you can redistribute it and/or modify
@@ -136,7 +138,7 @@ def source_connect(ip):
     print 'M6 Rsp: %s' % repr(m6_rsp)
 
     # TODO: extract session ID
-    match = re.search(r'Session: (\d*);', m6_rsp)
+    match = re.search(r'Session: (\d*)', m6_rsp)
 
     # Send: M6 Request
     s.send(m7_req.format(ip, match.group(1)))
@@ -159,7 +161,7 @@ def source_connect(ip):
             break
 
         if 'TEARDOWN' in req:
-            print 'Tear down received!'
+            print 'Teardown received!'
             break
 
         #if keepalives_sent == 120:

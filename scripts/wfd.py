@@ -37,7 +37,7 @@ def wps_auth():
     time.sleep(1)
 
 def wps_status_get():
-    print 'wps_satus_get:'
+    print 'wps_status_get:'
     output = get_stdout(["./wpa_cli", "status"])
     print output
 
@@ -49,8 +49,7 @@ def p2p_status_get():
     #print 'p2p_status_get:'
     output = get_stdout('iwpriv wlan0 p2p_get status')
     match = re.search(r'Status=(\d*)', output)
-    peer_status = int(match.group(1))
-    return peer_status
+    return int(match.group(1))
 
 def p2p_set_nego(mac):
     print 'p2p_set_nego:'
@@ -67,7 +66,8 @@ def p2p_set_nego(mac):
         peer_status = p2p_status_get()
         print 'peer_status: %d' % peer_status
 
-        if peer_status == 10:
+        # For Windows 8.1 support, we consider 19 as negotiation completed
+        if peer_status == 10 or peer_status == 19:
             print 'Negotiation suceeded!'
             break
 
@@ -138,18 +138,6 @@ def p2p_req_cm_get():
     print 'p2p_req_cm_get:'
     print get_stdout('iwpriv wlan0 p2p_get req_cm')
 
-# -----------------------
-# p2p_req_cm_get
-#   Gets supported authentication type
-# -----------------------
-def p2p_req_cm_get():
-    print 'p2p_req_cm_get:'
-    print get_stdout('iwpriv wlan0 p2p_get req_cm')
-
-# -----------------------
-# p2p_req_cm_get
-#   Gets supported authentication type
-# -----------------------
 def p2p_role_get():
     print 'p2p_role_get:'
     output = get_stdout('iwpriv wlan0 p2p_get role')
@@ -173,7 +161,7 @@ def wait_forever():
 
 def p2p_go_mode_set():
 
-    # Start host APD
+    # Start hostapd
     get_stdout(["./hostapd", "-B", "p2p_hostapd.conf"])
 
     # Wait for initialization
@@ -212,14 +200,11 @@ def do_wps():
 def read_all_sta():
 
     print 'read_all_sta:'
-    output = get_stdout(["./hostapd_cli", "all_sta"])
 
+    output = get_stdout(["./hostapd_cli", "all_sta"])
     print output
 
-    if 'dot11RSNAStatsSTAAddress' in output:
-        return True
-
-    return False
+    return 'dot11RSNAStatsSTAAddress' in output
 
 def p2p_disable():
 
@@ -232,15 +217,12 @@ def p2p_peer_scan():
     while 1:
 
         output = get_stdout(cmd_iwlist_wlan0_scan)
-
         print output
 
         if 'No scan results' not in output:
-
             return True
 
-        if count > 3 :
-
+        if count > 3:
             return False
 
         count += 1
@@ -287,15 +269,18 @@ def wfd_connection_wait():
         #    print 'p2p request received! Scan for peer ...'
         #    p2p_peer_scan()
 
-        if peer_status == 8:
+        # status 8 is the original Discovery Request
+        # status 22 needs to be handled this way, or Nexus 4 4.4 won't always work
+        # status 19 was added to try to implement windows 8.1 support
+        if peer_status in [8, 19, 22]:
             # Discovery request or gonego fail
             print 'Discovery request received!'
             peer_found = p2p_peer_scan()
 
-            if peer_found == False:
-                p2p_disable()
-            else:
+            if peer_found:
                 break
+
+            p2p_disable()
 
         time.sleep(1)
 

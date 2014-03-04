@@ -76,13 +76,13 @@ m16_rsp =   'RTSP/1.0 200 OK\r\n'                               \
             'CSeq: {}\r\n'                                      \
             '\r\n'
 
-def source_connect(ip):
+def source_connect(ip, port):
 
     # Create a socket object
     s = socket.socket()
 
     # Connect to port
-    s.connect((ip, 7236))
+    s.connect((ip, port))
 
     # Connect via wireless interface
     s.setsockopt(socket.SOL_SOCKET, 25, 'wlan0')

@@ -28,8 +28,7 @@ from util import get_stdout
 
 cmd_wlan0_up = 'ifup wlan0'
 cmd_inc_rmem_default = 'sysctl -w net.core.rmem_default=1000000'
-#cmd_launch_core_app = 'nice -n -20 ./core 1>/dev/null &'
-cmd_launch_core_app = 'nice -n -20 ./core'
+cmd_launch_core_app = 'nice -n -20 ./core 1>/dev/null 2>&1 &'
 #cmd_kill_core_app = 'python core_terminate.py'
 cmd_kill_core_app = 'killall core'
 cmd_dhcp_start = 'service isc-dhcp-server start'
@@ -92,11 +91,13 @@ while 1:
 
     # Get source IP
     ip = leased_ip_get()
-
     print 'leased IP: ', ip
 
+    port = wfd.p2p_peer_port_get()
+    print 'peer port: ', port
+
     # Connect to source
-    sink.source_connect(ip)
+    sink.source_connect(ip, port)
 
     # Stop DHCPd
     output = get_stdout(cmd_dhcp_stop)

@@ -124,8 +124,11 @@ def p2p_enable():
 def p2p_peer_devaddr_get():
     print 'p2p_peer_devaddr_get:'
     output = get_stdout(["iwpriv", "wlan0", "p2p_get", "peer_deva"])
-    match = re.search(r'\n(.*)$', output)
-    mac = '%s%s:%s%s:%s%s:%s%s:%s%s:%s%s' % match.group(1)[0:11]
+    print output
+    match = re.search(r'^([0-9A-Fa-f]{12})$', output, re.M)
+    print match.group(1)
+    mac = '%s:%s:%s:%s:%s:%s' % tuple(re.findall('[0-9A-Fa-f]{2}',match.group(1)))
+    print mac
     #mac = match.group(1)[0] + match.group(1)[1] + ':' \
     #    + match.group(1)[2] + match.group(1)[3] + ':' \
     #    + match.group(1)[4] + match.group(1)[5] + ':' \
@@ -134,6 +137,14 @@ def p2p_peer_devaddr_get():
     #    + match.group(1)[10] + match.group(1)[11]
 
     return mac
+
+def p2p_peer_port_get():
+    print 'p2p_peer_port_get:'
+    output = get_stdout(["iwpriv", "wlan0", "p2p_get", "peer_port"])
+    print output
+    match = re.search(r'^Port=(\d+)$', output, re.M)
+    print match.group(1)
+    return int(match.group(1))
 
 # -----------------------
 # p2p_req_cm_get

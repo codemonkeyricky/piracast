@@ -28,9 +28,9 @@ from util import get_stdout
 
 cmd_wlan0_up = 'ifup wlan0'
 cmd_inc_rmem_default = 'sysctl -w net.core.rmem_default=1000000'
-cmd_launch_core_app = 'nice -n -20 ./core 1>/dev/null 2>&1 &'
+cmd_launch_core_app = 'nice -n -20 ./piracast_core 1>/dev/null 2>&1 &'
 #cmd_kill_core_app = 'python core_terminate.py'
-cmd_kill_core_app = 'killall core'
+cmd_kill_core_app = 'pkill piracast_core'
 cmd_dhcp_start = 'service isc-dhcp-server start'
 cmd_dhcp_stop = 'service isc-dhcp-server stop'
 

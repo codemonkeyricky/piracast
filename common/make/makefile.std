@@ -70,7 +70,9 @@ CFLAGS := -pg -g
 all : $(module_mkdirs) \
       $(module_object)
 
-core : $(depend_objects)
+core: piracast_core
+
+piracast_core : $(depend_objects)
 	$(CC) $^  $(LIBDIR) $(LDFLAGS) -o $@
 	cp $@ ../scripts
 

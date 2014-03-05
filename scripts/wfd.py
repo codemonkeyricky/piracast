@@ -20,10 +20,8 @@ import time
 
 from util import get_stdout
 
-cmd_start_wpa_spplicant     = ["./wpa_supplicant", "-B", "-c", "./wpa_0_8.conf", "-i", "wlan0"]
-cmd_killall_wpa_spplicant   = ["./wpa_cli", "terminate"]
 cmd_start_hostapd           = ["./hostapd", "-B", "p2p_hostapd.conf", "-P", "./hostapd.pid"]
-cmd_killall_hostapd         = 'kill $(cat ./hostapd.pid)'
+cmd_stop_hostapd            = 'kill $(cat ./hostapd.pid)'
 cmd_iwlist_wlan0_scan       = 'iwlist wlan0 scan'
 
 def peer_mac_get():
@@ -31,21 +29,11 @@ def peer_mac_get():
     match = re.search(r'MAC (.*)$', output)
     return match.group(1)
 
-def wpa_supplicant_start():
-    print 'wpa_supplicant_start:'
-    get_stdout(cmd_start_wpa_spplicant)
-    time.sleep(1)
-
 def wps_auth():
     print 'wps_auth:'
     output = get_stdout(["./hostapd_cli", "wps_pbc", "any"])
     print output
     time.sleep(1)
-
-def wps_status_get():
-    print 'wps_status_get:'
-    output = get_stdout(["./wpa_cli", "status"])
-    print output
 
 def p2p_wpsinfo():
     print 'p2p_wpsinfo:'
@@ -234,7 +222,6 @@ def p2p_peer_scan():
         count += 1
 
 def wfd_connection_wait():
-    get_stdout(cmd_stop_wpa_spplicant)
     get_stdout(cmd_stop_hostapd)
 
     # Disable p2p

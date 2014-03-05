@@ -20,8 +20,10 @@ import time
 
 from util import get_stdout
 
-cmd_killall_wpa_spplicant   = 'killall wpa_supplicant'
-cmd_killall_hostapd         = 'killall hostapd'
+cmd_start_wpa_spplicant     = ["./wpa_supplicant", "-B", "-c", "./wpa_0_8.conf", "-i", "wlan0"]
+cmd_killall_wpa_spplicant   = ["./wpa_cli", "terminate"]
+cmd_start_hostapd           = ["./hostapd", "-B", "p2p_hostapd.conf", "-P", "./hostapd.pid"]
+cmd_killall_hostapd         = 'kill $(cat ./hostapd.pid)'
 cmd_iwlist_wlan0_scan       = 'iwlist wlan0 scan'
 
 def peer_mac_get():
@@ -31,7 +33,7 @@ def peer_mac_get():
 
 def wpa_supplicant_start():
     print 'wpa_supplicant_start:'
-    get_stdout(["./wpa_supplicant", "-i", "wlan0", "-c", "./wpa_0_8.conf", "-B"])
+    get_stdout(cmd_start_wpa_spplicant)
     time.sleep(1)
 
 def wps_auth():
@@ -174,7 +176,7 @@ def p2p_opch_get():
 def p2p_go_mode_set():
 
     # Start hostAPd and wait for it to daemonize; ignore stdout
-    get_stdout(["./hostapd", "-B", "p2p_hostapd.conf"])
+    get_stdout(cmd_start_hostapd)
 
     # Wait for initialization
     time.sleep(1)
@@ -232,8 +234,8 @@ def p2p_peer_scan():
         count += 1
 
 def wfd_connection_wait():
-    get_stdout(cmd_killall_wpa_spplicant)
-    get_stdout(cmd_killall_hostapd)
+    get_stdout(cmd_stop_wpa_spplicant)
+    get_stdout(cmd_stop_hostapd)
 
     # Disable p2p
     p2p_disable()

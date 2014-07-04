@@ -60,8 +60,9 @@ print get_stdout(cmd_kill_core_app)
 
 while 1:
 
-    # Launch application
-    get_stdout(cmd_launch_core_app)
+    # Don't launch application, because it stuck
+    # the execution
+    # get_stdout(cmd_launch_core_app)
 
     # Start DHCP
     print get_stdout(cmd_dhcp_start)

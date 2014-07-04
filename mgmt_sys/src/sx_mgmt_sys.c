@@ -66,7 +66,7 @@ void mgmt_sys_init(
 
     sx_mgmt_video_scheduler_init();
 
-    // Initialize video decoder module.
+    // Initialize audio decoder module.
     sx_mgmt_audio_decoder_init();
 
     sx_mgmt_audio_scheduler_init();

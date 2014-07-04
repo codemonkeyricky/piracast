@@ -334,7 +334,8 @@ static UINT8 slice_start_find(
 
             curr_ptr += sizeof(sPES_EXT);
 
-            if(*curr_ptr != 0x05)
+            // To make it work with Sony Xperia
+            if((*curr_ptr != 0x05) && (*curr_ptr != 0x0a))
             {
                 printf("0x%x 0x%x 0x%x 0x%x 0x%x 0x%x 0x%x 0x%x\n", 
                        ((UINT8 *) ts)[0], 

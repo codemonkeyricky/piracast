@@ -1,5 +1,5 @@
 # compiled files
 obj
 *.pyc
-scripts/core
-target/core
+scripts/piracast_core
+target/piracast_core

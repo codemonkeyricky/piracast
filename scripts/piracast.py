@@ -26,16 +26,15 @@ import sink
 
 from util import get_stdout
 
+lease_file = './dhcpd.leases'
+
 cmd_wlan0_up = 'ifup wlan0'
 cmd_inc_rmem_default = 'sysctl -w net.core.rmem_default=1000000'
-#cmd_launch_core_app = 'nice -n -20 ./core 1>/dev/null &'
-cmd_launch_core_app = 'nice -n -20 ./core'
+cmd_launch_core_app = 'nice -n -20 ./piracast_core 1>/dev/null 2>&1 &'
 #cmd_kill_core_app = 'python core_terminate.py'
-cmd_kill_core_app = 'killall core'
-cmd_dhcp_start = 'service isc-dhcp-server start'
-cmd_dhcp_stop = 'service isc-dhcp-server stop'
-
-lease_file = '/var/lib/dhcp/dhcpd.leases'
+cmd_kill_core_app = 'pkill piracast_core'
+cmd_dhcp_start = ['/usr/sbin/dhcpd', '-pf', './dhcpd.pid', '-cf', '../env/dhcpd.conf', '-lf', lease_file, 'wlan0']
+cmd_dhcp_stop = 'kill $(cat ./dhcpd.pid)'
 
 def lease_file_timestamp_get():
     return get_stdout('ls -l "%s"' % lease_file)
@@ -92,11 +91,13 @@ while 1:
 
     # Get source IP
     ip = leased_ip_get()
-
     print 'leased IP: ', ip
 
+    port = wfd.p2p_peer_port_get()
+    print 'peer port: ', port
+
     # Connect to source
-    sink.source_connect(ip)
+    sink.source_connect(ip, port)
 
     # Stop DHCPd
     output = get_stdout(cmd_dhcp_stop)

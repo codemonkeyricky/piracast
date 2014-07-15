@@ -1,15 +1,23 @@
 Welcome to the Piracast project. 
 =========
-Copyright 2013
+Copyright 2014 
+
 
 ### Limitation: 
     1. Only works with TP-Link dongle.
     2. No HDCP support (cannot remote Netflix or Google Music). 
 
 ### Install Driver:
-    1. sudo cp env/8188eu.ko /lib/modules/`uname -r`/kernel/drivers/net/wireless
-    2. sudo depmod -a
-    3. sudo modprobe 8188eu
+    1. uname -r //gives ur rp version number 
+    2. Based on the rp version number choose ur 8188eu tar file from http://www.raspberrypi.org/forums/viewtopic.php?p=462982#p462982
+    3. wget https://dl.dropboxusercontent.com/u/80256631/8188eu-201xyyzz.tar.gz
+    4. tar -zxvf 8188eu-201*.tar.gz
+    5. sudo cp rtl8188eufw.bin /lib/firmware/rtlwifi //not needed anymore if your operating system is above 3.10.33+
+    6. sudo install -p -m 644 8188eu.ko /lib/modules/`uname -r`/kernel/drivers/net/wireless
+    7. sudo insmod /lib/modules/3.10.33+/kernel/drivers/net/wireless/8188eu.ko
+    8. sudo depmod -a
+    9. sudo reboot
+    
 
 ### Install DHCP server
     1. sudo apt-get install isc-dhcp-server

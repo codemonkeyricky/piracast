@@ -20,8 +20,8 @@ import time
 
 from util import get_stdout
 
-cmd_killall_wpa_spplicant   = 'killall wpa_supplicant'
-cmd_killall_hostapd         = 'killall hostapd'
+cmd_start_hostapd           = ["./hostapd", "-B", "p2p_hostapd.conf", "-P", "./hostapd.pid"]
+cmd_stop_hostapd            = 'kill $(cat ./hostapd.pid)'
 cmd_iwlist_wlan0_scan       = 'iwlist wlan0 scan'
 
 def peer_mac_get():
@@ -29,21 +29,11 @@ def peer_mac_get():
     match = re.search(r'MAC (.*)$', output)
     return match.group(1)
 
-def wpa_supplicant_start():
-    print 'wpa_supplicant_start:'
-    get_stdout(["./wpa_supplicant", "-i", "wlan0", "-c", "./wpa_0_8.conf", "-B"])
-    time.sleep(1)
-
 def wps_auth():
     print 'wps_auth:'
     output = get_stdout(["./hostapd_cli", "wps_pbc", "any"])
     print output
     time.sleep(1)
-
-def wps_status_get():
-    print 'wps_status_get:'
-    output = get_stdout(["./wpa_cli", "status"])
-    print output
 
 def p2p_wpsinfo():
     print 'p2p_wpsinfo:'
@@ -123,9 +113,12 @@ def p2p_enable():
 # -----------------------
 def p2p_peer_devaddr_get():
     print 'p2p_peer_devaddr_get:'
-    output = get_stdout(["iwpriv", "wlan0", "p2p_get", "peer_deva"])
-    match = re.search(r'\n(.*)$', output)
-    mac = '%s%s:%s%s:%s%s:%s%s:%s%s:%s%s' % match.group(1)[0:11]
+    output = get_stdout('iwpriv wlan0 p2p_get peer_deva')
+    print output
+    match = re.search(r'^([0-9A-Fa-f]{12})$', output, re.M)
+    print match.group(1)
+    mac = '%s:%s:%s:%s:%s:%s' % tuple(re.findall('[0-9A-Fa-f]{2}',match.group(1)))
+    print mac
     #mac = match.group(1)[0] + match.group(1)[1] + ':' \
     #    + match.group(1)[2] + match.group(1)[3] + ':' \
     #    + match.group(1)[4] + match.group(1)[5] + ':' \
@@ -134,6 +127,14 @@ def p2p_peer_devaddr_get():
     #    + match.group(1)[10] + match.group(1)[11]
 
     return mac
+
+def p2p_peer_port_get():
+    print 'p2p_peer_port_get:'
+    output = get_stdout('iwpriv wlan0 p2p_get peer_port')
+    print output
+    match = re.search(r'^Port=(\d+)$', output, re.M)
+    print match.group(1)
+    return int(match.group(1))
 
 # -----------------------
 # p2p_req_cm_get
@@ -163,7 +164,7 @@ def p2p_opch_get():
 def p2p_go_mode_set():
 
     # Start hostAPd and wait for it to daemonize; ignore stdout
-    get_stdout(["./hostapd", "-B", "p2p_hostapd.conf"])
+    get_stdout(cmd_start_hostapd)
 
     # Wait for initialization
     time.sleep(1)
@@ -221,8 +222,7 @@ def p2p_peer_scan():
         count += 1
 
 def wfd_connection_wait():
-    get_stdout(cmd_killall_wpa_spplicant)
-    get_stdout(cmd_killall_hostapd)
+    get_stdout(cmd_stop_hostapd)
 
     # Disable p2p
     p2p_disable()

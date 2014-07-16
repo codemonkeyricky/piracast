@@ -54,9 +54,11 @@ get_stdout(cmd_wlan0_up)
 print 'Increase rmem_default...'
 get_stdout(cmd_inc_rmem_default)
 
-print 'Kill running application...'
+# Don't kill running application as
+# it is started explicitly
+#print 'Kill running application...'
 #core_channel.end()
-print get_stdout(cmd_kill_core_app)
+#print get_stdout(cmd_kill_core_app)
 
 while 1:
 

@@ -34,4 +34,5 @@ Copyright 2014
 
 ### To run Piracast:
     1. cd scripts
-    2. sudo python piracast.py
+    2. sudo nice -n -20 ./core &
+    3. sudo python piracast.py

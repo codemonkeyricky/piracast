@@ -139,7 +139,9 @@ static UINT32 pes_payload_size(
         {
             if(PUSI_GET(ts->hdr))
             {
-                assert(afc == 0x01);
+                // This makes Piracast to work with Sony Xperia
+                // As it sends afc with payload (11b)
+                assert((afc == 0x01) || (afc == 0x03));
 
                 //            printf("### 0x%x 0x%x 0x%x 0x%x\n",
                 //                   ts->payload.payload[14],
@@ -251,7 +253,9 @@ static UINT8 slice_start_find(
             sPES_EXT *pes_ext = (sPES_EXT *) curr_ptr;
 
             *pes_payload_size = ntohs(pes_ext->length) - 14;
-            assert(*pes_payload_size == 1920);
+
+            // PES packet length is zero for Sony Xperia
+            assert((*pes_payload_size == 1920) || (*pes_payload_size == -14));
 
             return 1;
         }

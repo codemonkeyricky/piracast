@@ -334,7 +334,10 @@ static UINT8 slice_start_find(
 
             curr_ptr += sizeof(sPES_EXT);
 
-            if(*curr_ptr != 0x05)
+            // The adaptation field is present in the TS header of
+            // Sony Xperia. Due to this initial byte of PES payload
+            // becomes 0x0a
+            if((*curr_ptr != 0x05) && (*curr_ptr != 0x0a))
             {
                 printf("0x%x 0x%x 0x%x 0x%x 0x%x 0x%x 0x%x 0x%x\n", 
                        ((UINT8 *) ts)[0], 

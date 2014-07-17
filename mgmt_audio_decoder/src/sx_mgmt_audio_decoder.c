@@ -254,7 +254,7 @@ static UINT8 slice_start_find(
 
             *pes_payload_size = ntohs(pes_ext->length) - 14;
 
-            // To make Piracast work with Sony Xperia
+            // PES packet length is zero for Sony Xperia
             assert((*pes_payload_size == 1920) || (*pes_payload_size == -14));
 
             return 1;

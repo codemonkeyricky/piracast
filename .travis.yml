@@ -1,6 +1,5 @@
-    ---
-    language: cpp
-    compiler: 
-    - gcc
+---
+language: cpp
+compiler: gcc
 
-    script:  cd target && make core
+script:  cd target && make core

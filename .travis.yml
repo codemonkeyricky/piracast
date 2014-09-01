@@ -1,0 +1,7 @@
+    ---
+    language: cpp
+    compiler: 
+    - gcc
+
+    # Change this to your needs
+    script:  cd target && make core

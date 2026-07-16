@@ -72,7 +72,7 @@ def p2p_set_nego(mac):
 
         # For Windows 8.1 support, we consider 19 as negotiation completed
         if peer_status in [10, 19]:
-            print 'Negotiation suceeded!'
+            print 'Negotiation succeeded!'
             break
 
     # Get role
